@@ -1,5 +1,9 @@
-# :round_pushpin::round_pushpin: Blackbox Sticks Generator
+# Blackbox Sticks Generator
 Generate a 3d video of your transmitter sticks from blackbox flight data.
+
+## :computer: Local Development
+The following dependencies will be needed to develop locally:
+* [Blender v2.83 LTS](https://www.blender.org/download/lts/2-93/)
 
 ## :page_facing_up: License
 Licensed under GPLv3.
