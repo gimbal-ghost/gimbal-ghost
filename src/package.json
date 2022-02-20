@@ -1,0 +1,28 @@
+{
+  "name": "blackbox-sticks-generator",
+  "version": "0.0.0",
+  "description": "Generate a 3d video of your transmitter sticks from blackbox flight data.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joshuadavidson/blackbox-sticks-generator.git"
+  },
+  "author": "Joshua Davidson",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/joshuadavidson/blackbox-sticks-generator/issues"
+  },
+  "homepage": "https://github.com/joshuadavidson/blackbox-sticks-generator#readme",
+  "devDependencies": {
+    "eslint": "^8.9.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4"
+  },
+  "dependencies": {
+    "csv-parse": "^5.0.4"
+  }
+}
