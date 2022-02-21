@@ -23,6 +23,7 @@
     "eslint-plugin-import": "^2.25.4"
   },
   "dependencies": {
-    "csv-parse": "^5.0.4"
+    "csv-parse": "^5.0.4",
+    "stream-transform": "^3.0.4"
   }
 }

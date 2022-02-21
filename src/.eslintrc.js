@@ -12,7 +12,9 @@ module.exports = {
     },
     rules: {
         'no-console': 'off',
-        indent: ['error', 4],
+        indent: ['error', 4, { MemberExpression: 'off' }],
         'no-unused-vars': 'warn',
+        'arrow-parens': ['error', 'as-needed'],
+        'import/prefer-default-export': 'off',
     },
 };
