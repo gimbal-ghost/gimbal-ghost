@@ -1,15 +1,18 @@
 module.exports = {
-    env: {
-        browser: true,
-        es2021: true,
+    root: true,
+    parser: '@typescript-eslint/parser',
+    parserOptions: {
+        tsconfigRootDir: __dirname,
+        ecmaVersion: 'latest',
     },
+    plugins: [
+        '@typescript-eslint',
+    ],
     extends: [
         'airbnb-base',
+        'airbnb-typescript/base',
+        'plugin:node/recommended',
     ],
-    parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-    },
     rules: {
         'no-console': 'off',
         indent: ['error', 4, { MemberExpression: 'off' }],

@@ -1,17 +1,11 @@
 import { spawnSync } from 'child_process';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import {
-    readdirSync, unlinkSync, createReadStream, createWriteStream,
-} from 'fs';
-import { parse as csvParse } from 'csv-parse';
+import { readdirSync, unlinkSync, createReadStream, createWriteStream } from 'fs';
+import { parse } from 'csv-parse';
 import { transform } from 'stream-transform';
-import { nextTick } from 'process';
 
 (async () => {
-    const scriptName = fileURLToPath(import.meta.url);
-    const scriptDirectory = path.dirname(scriptName);
-    const projectRootPath = path.resolve(scriptDirectory, '..');
+    const projectRootPath = path.resolve(__dirname, '../..');
 
     const blackBoxDecodeExePath = path.resolve(projectRootPath, 'vendor/blackbox-tools-0.4.3-windows');
     const blackBoxFileDirectory = path.resolve(projectRootPath, 'blackbox-logs');
@@ -37,10 +31,28 @@ import { nextTick } from 'process';
     const secPerFrame = 1 / fps;
     const microSecPerFrame = Math.floor(secPerFrame * 1000000);
 
+    interface Log {
+        time: number,
+        leftStickX: number,
+        leftStickY: number,
+        rightStickX: number,
+        rightStickY: number,
+    }
+
+    function covertToLog(logData: any): Log {
+        return {
+            time: Number(logData['time (us)']),
+            leftStickX: Number(logData['rcCommand[2]']),
+            leftStickY: Number(logData['rcCommand[3]']),
+            rightStickX: Number(logData['rcCommand[0]']),
+            rightStickY: Number(logData['rcCommand[1]']),
+        }
+    }
+
     // Transform the blackbox csv data into a file containing a list of commands for ffmpeg
     blackboxDataCSVs.forEach(fileName => {
         const csvPath = path.resolve(blackBoxFileDirectory, fileName);
-        const csvParser = csvParse({
+        const csvParser = parse({
             // Handle the odd delimiters in the blackbox csv
             ltrim: true,
             columns: true,
@@ -48,17 +60,18 @@ import { nextTick } from 'process';
         const outputFilePath = path.resolve(blackBoxFileDirectory, `${fileName}.txt`);
         const outputFile = createWriteStream(outputFilePath);
         let logStartTime = 0;
-        let previousLog = null;
+        let previousLog: Log | null = null;
         let frame = 0;
-        const convertToStickPositions = transform((currentLog, next) => {
+        const convertToStickPositions = transform((currentLogData, next) => {
+            const currentLog = covertToLog(currentLogData);
             // On the first pass, set log start time and ensure that we have a previous log
             if (!previousLog) {
-                logStartTime = Number(currentLog['time (us)']);
+                logStartTime = currentLog.time;
                 const stickData = {
-                    leftStickX: Number(currentLog['rcCommand[2]']),
-                    leftStickY: Number(currentLog['rcCommand[3]']),
-                    rightStickX: Number(currentLog['rcCommand[0]']),
-                    rightStickY: Number(currentLog['rcCommand[1]']),
+                    leftStickX: currentLog.leftStickX,
+                    leftStickY: currentLog.leftStickY,
+                    rightStickX: currentLog.rightStickX,
+                    rightStickY: currentLog.rightStickY,
                 }
 
                 frame += 1;
@@ -69,18 +82,17 @@ import { nextTick } from 'process';
 
             // Create a frame when the log time is past the frame time
             const currentFrameTime = logStartTime + (frame * microSecPerFrame);
-            const currentLogTime = Number(currentLog['time (us)']);
+            const currentLogTime = Number(currentLog.time);
             if (currentLogTime >= currentFrameTime) {
                 // Interpolate between the previous record and current at the frame time
-                const previousLogTime = Number(previousLog['time (us)']);
-                const timeBetweenLogs = currentLogTime - previousLogTime;
-                const interpolatedTime = currentFrameTime - previousLogTime;
+                const timeBetweenLogs = currentLogTime - previousLog.time;
+                const interpolatedTime = currentFrameTime - previousLog.time;
                 const interpolationFactor = interpolatedTime / timeBetweenLogs;
 
-                const leftStickXAvg = (Number(previousLog['rcCommand[2]']) + Number(currentLog['rcCommand[2]'])) / 2;
-                const leftStickYAvg = (Number(previousLog['rcCommand[3]']) + Number(currentLog['rcCommand[3]'])) / 2;
-                const rightStickXAvg = (Number(previousLog['rcCommand[0]']) + Number(currentLog['rcCommand[0]'])) / 2;
-                const rightStickYAvg = (Number(previousLog['rcCommand[1]']) + Number(currentLog['rcCommand[1]'])) / 2;
+                const leftStickXAvg = (previousLog.leftStickX + currentLog.leftStickX) / 2;
+                const leftStickYAvg = (previousLog.leftStickY + currentLog.leftStickY) / 2;
+                const rightStickXAvg = (previousLog.rightStickX + currentLog.rightStickX) / 2;
+                const rightStickYAvg = (previousLog.rightStickY + currentLog.rightStickY) / 2;
                 const stickData = {
                     leftStickX: leftStickXAvg * interpolationFactor,
                     leftStickY: leftStickYAvg * interpolationFactor,

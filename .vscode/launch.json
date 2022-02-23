@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug TS",
+            "cwd": "${workspaceFolder}/script",
+            "runtimeArgs": [
+                "--require",
+                "ts-node/register"
+            ],
+            "args": [
+                "${workspaceFolder}/script/src/index.ts"
+            ]
+        }
+    ]
+}
