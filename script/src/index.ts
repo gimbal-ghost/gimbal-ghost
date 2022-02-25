@@ -5,11 +5,16 @@ import { parse } from 'csv-parse';
 import { transform } from 'stream-transform';
 import { StickFrameInfo, StickPositions, Log, FramePaths, TransmitterModes } from './types';
 
+// TODO: Implement error handling
+// TODO: Implement args
 (async () => {
     const projectRootPath = path.resolve(__dirname, '../..');
 
     // Get the stick frame metadata from the manifest
-    const stickFrameInfo: StickFrameInfo = require('../../sticks/manifest.json');
+    const stickManifestFilePath = path.resolve(__dirname, '../../sticks/manifest.json');
+    const sitckDirectory = path.dirname(stickManifestFilePath);
+    const stickFrameInfo: StickFrameInfo = require(stickManifestFilePath);
+    const stickFramesDirectory = path.resolve(sitckDirectory, stickFrameInfo.frames.location);
 
     // Create the .csv file of blackbox data
     const blackBoxFileDirectory = path.resolve(projectRootPath, 'blackbox-logs');
@@ -58,27 +63,88 @@ import { StickFrameInfo, StickPositions, Log, FramePaths, TransmitterModes } fro
         return Math.min(Math.max(min, value), max);
     }
 
+    // Find the nearest value in a range of numbers
+    function nearest(value: number, rangeMin: number, rangeMax: number, increment: number): number {
+        let nearestValue: number = 0;
+        for (let currentRangeValue = rangeMin; currentRangeValue <= rangeMax; currentRangeValue += increment) {
+            const nextRangeValue = (currentRangeValue + increment);
+            if (currentRangeValue <= value && value <= nextRangeValue) {
+                const differenceFromCurrent = value - currentRangeValue;
+                const differenceFromNext = nextRangeValue - value;
+
+                if (differenceFromCurrent <= differenceFromNext) {
+                    nearestValue = currentRangeValue;
+                    break;
+                }
+                else {
+                    nearestValue = nextRangeValue
+                    break;
+                }
+            }
+        }
+        return nearestValue;
+    }
+
+    // Convert the log stick position to a frame position that is within the allowable frames
+    function getFramePosition(value: number, initialMin: number, initialMax: number, finalMin: number, finalMax: number, increment: number): number {
+        const clampedValue = clamp(value, initialMin, initialMax);
+        const scaledValue = scale(clampedValue, initialMin, initialMax, finalMin, finalMax);
+        const nearestFrameValue = nearest(scaledValue, finalMin, finalMax, increment);
+        return nearestFrameValue;
+    }
+
     // Take the stick positions at certain frame and generate the prerendered frame path
     function generateFrameFileNames(stickPositions: StickPositions, stickFrameInfo: StickFrameInfo, mode: TransmitterModes): FramePaths {
-        // TODO: Left off here
-        const clampedScaledRoundedStickPositions = {
-            roll: clamp(stickPositions.roll, -500, 500),
-            pitch: clamp(stickPositions.pitch, -500, 500),
-            yaw: clamp(stickPositions.yaw, -500, 500),
-            throttle: clamp(stickPositions.throttle, 1000, 2000),
+        const frameStickPositions = {
+            roll: getFramePosition(stickPositions.roll, -500, 500, stickFrameInfo.frames.x.min, stickFrameInfo.frames.x.max, stickFrameInfo.frames.x.increment),
+            pitch: getFramePosition(stickPositions.pitch, -500, 500, stickFrameInfo.frames.y.min, stickFrameInfo.frames.y.max, stickFrameInfo.frames.y.increment),
+            yaw: getFramePosition(stickPositions.yaw, -500, 500, stickFrameInfo.frames.x.min, stickFrameInfo.frames.x.max, stickFrameInfo.frames.x.increment),
+            throttle: getFramePosition(stickPositions.yaw, 1000, 2000, stickFrameInfo.frames.y.min, stickFrameInfo.frames.y.max, stickFrameInfo.frames.y.increment),
         } as StickPositions
 
         switch (mode) {
             case TransmitterModes.Mode1:
+                return {
+                    left: path.resolve(stickFramesDirectory, stickFrameInfo.frames.fileNameFormat.replace('<x>', frameStickPositions.yaw.toString()).replace('<y>', frameStickPositions.pitch.toString())),
+                    right: path.resolve(stickFramesDirectory, stickFrameInfo.frames.fileNameFormat.replace('<x>', frameStickPositions.roll.toString()).replace('<y>', frameStickPositions.throttle.toString())),
+                } as FramePaths
             case TransmitterModes.Mode2:
+                return {
+                    left: path.resolve(stickFramesDirectory, stickFrameInfo.frames.fileNameFormat.replace('<x>', frameStickPositions.yaw.toString()).replace('<y>', frameStickPositions.throttle.toString())),
+                    right: path.resolve(stickFramesDirectory, stickFrameInfo.frames.fileNameFormat.replace('<x>', frameStickPositions.roll.toString()).replace('<y>', frameStickPositions.pitch.toString())),
+                } as FramePaths
             case TransmitterModes.Mode3:
-            case TransmitterModes.Mode4:
+                return {
+                    left: path.resolve(stickFramesDirectory, stickFrameInfo.frames.fileNameFormat.replace('<x>', frameStickPositions.roll.toString()).replace('<y>', frameStickPositions.pitch.toString())),
+                    right: path.resolve(stickFramesDirectory, stickFrameInfo.frames.fileNameFormat.replace('<x>', frameStickPositions.yaw.toString()).replace('<y>', frameStickPositions.throttle.toString())),
+                } as FramePaths
+            default:
+                return {
+                    left: path.resolve(stickFramesDirectory, stickFrameInfo.frames.fileNameFormat.replace('<x>', frameStickPositions.roll.toString()).replace('<y>', frameStickPositions.throttle.toString())),
+                    right: path.resolve(stickFramesDirectory, stickFrameInfo.frames.fileNameFormat.replace('<x>', frameStickPositions.yaw.toString()).replace('<y>', frameStickPositions.pitch.toString())),
+                } as FramePaths
         }
+    }
 
-        return {
-            left: '',
-            right: '',
-        }
+    // Take two logs and interpolate the stick positions between them
+    function interpolateStickPositions(currentLog: Log, previousLog: Log, currentFrameTime: number): StickPositions {
+        // Interpolate between the previous record and current at the frame time
+        const currentLogTime = currentLog.time;
+        const timeBetweenLogs = currentLogTime - previousLog.time;
+        const interpolatedTime = currentFrameTime - previousLog.time;
+        const interpolationFactor = interpolatedTime / timeBetweenLogs;
+
+        const rollAvg = (previousLog.roll + currentLog.roll) / 2;
+        const pitchAvg = (previousLog.pitch + currentLog.pitch) / 2;
+        const yawAvg = (previousLog.yaw + currentLog.yaw) / 2;
+        const throttleAvg = (previousLog.throttle + currentLog.throttle) / 2;
+        const stickPositions = {
+            roll: rollAvg * interpolationFactor,
+            pitch: pitchAvg * interpolationFactor,
+            yaw: yawAvg * interpolationFactor,
+            throttle: throttleAvg * interpolationFactor,
+        } as StickPositions
+        return stickPositions;
     }
 
     // Transform the blackbox csv data into a file containing a list of commands for ffmpeg
@@ -92,9 +158,12 @@ import { StickFrameInfo, StickPositions, Log, FramePaths, TransmitterModes } fro
         });
 
         // Creat the outputfile
-        const outputFileName = `${fileName.replace('.csv', '')}.txt`;
-        const outputFilePath = path.resolve(blackBoxFileDirectory, outputFileName);
-        const outputFile = createWriteStream(outputFilePath);
+        const leftOutputFileName = `${fileName.replace('.csv', '')}.left.demux.txt`;
+        const leftOutputFilePath = path.resolve(blackBoxFileDirectory, leftOutputFileName);
+        const leftStickFFMPEGDemuxFile = createWriteStream(leftOutputFilePath);
+        const rightOutputFileName = `${fileName.replace('.csv', '')}.right.demux.txt`;
+        const rightOutputFilePath = path.resolve(blackBoxFileDirectory, rightOutputFileName);
+        const rightStickFFMPEGDemuxFile = createWriteStream(rightOutputFilePath);
 
         // Create the stream transform for each row of data
         let logStartTime = 0;
@@ -105,44 +174,36 @@ import { StickFrameInfo, StickPositions, Log, FramePaths, TransmitterModes } fro
             // On the first pass, set log start time and ensure that we have a previous log
             if (!previousLog) {
                 logStartTime = currentLog.time;
-                const stickData = {
+                const stickPositions = {
                     roll: currentLog.roll,
                     pitch: currentLog.pitch,
                     yaw: currentLog.yaw,
                     throttle: currentLog.throttle,
-                } as StickPositions
+                } as StickPositions;
+                // TODO: Make mode configurable
+                const frameFileNames = generateFrameFileNames(stickPositions, stickFrameInfo, TransmitterModes.Mode2)
 
                 frame += 1;
                 previousLog = currentLog;
 
-                return next(null, `${JSON.stringify(stickData)}\n`);
+                leftStickFFMPEGDemuxFile.write(`file '${frameFileNames.left}'\nduration ${1 / 25}\n`);
+                rightStickFFMPEGDemuxFile.write(`file '${frameFileNames.right}'\nduration ${1 / 25}\n`);
             }
 
             // Create a frame when the log time is past the frame time
             const currentFrameTime = logStartTime + (frame * microSecPerFrame);
-            const currentLogTime = Number(currentLog.time);
+            const currentLogTime = currentLog.time;
             if (currentLogTime >= currentFrameTime) {
-                // Interpolate between the previous record and current at the frame time
-                const timeBetweenLogs = currentLogTime - previousLog.time;
-                const interpolatedTime = currentFrameTime - previousLog.time;
-                const interpolationFactor = interpolatedTime / timeBetweenLogs;
-
-                const rollAvg = (previousLog.roll + currentLog.roll) / 2;
-                const pitchAvg = (previousLog.pitch + currentLog.pitch) / 2;
-                const yawAvg = (previousLog.yaw + currentLog.yaw) / 2;
-                const throttleAvg = (previousLog.throttle + currentLog.throttle) / 2;
-                const stickData = {
-                    roll: rollAvg * interpolationFactor,
-                    pitch: pitchAvg * interpolationFactor,
-                    yaw: yawAvg * interpolationFactor,
-                    throttle: throttleAvg * interpolationFactor,
-                } as StickPositions
+                const stickPositions = interpolateStickPositions(currentLog, previousLog, currentFrameTime);
+                // TODO: Make mode configurable
+                const frameFileNames = generateFrameFileNames(stickPositions, stickFrameInfo, TransmitterModes.Mode2)
 
                 // Advance variables for next iteration
                 frame += 1;
                 previousLog = currentLog;
 
-                return next(null, `${JSON.stringify(stickData)}\n`);
+                leftStickFFMPEGDemuxFile.write(`file '${frameFileNames.left}'\nduration ${1 / 25}\n`);
+                rightStickFFMPEGDemuxFile.write(`file '${frameFileNames.right}'\nduration ${1 / 25}\n`);
             }
             // Move on to the next log entry without piping data through
             return next();
@@ -151,6 +212,9 @@ import { StickFrameInfo, StickPositions, Log, FramePaths, TransmitterModes } fro
         createReadStream(csvPath)
             .pipe(csvParser)
             .pipe(convertToStickPositions)
-            .pipe(outputFile);
+            .on('end', () => {
+                leftStickFFMPEGDemuxFile.end();
+                rightStickFFMPEGDemuxFile.end();
+            });
     });
 })();

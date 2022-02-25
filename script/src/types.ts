@@ -1,13 +1,14 @@
 export interface StickAxisInfo {
     min: number,
     max: number,
-    step: number,
+    increment: number,
 }
 
 export interface StickFrameInfo {
     name: string,
     frames: {
         location: string,
+        fileNameFormat: string,
         x: StickAxisInfo,
         y: StickAxisInfo,
     }
