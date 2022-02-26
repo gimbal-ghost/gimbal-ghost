@@ -1,0 +1,17 @@
+{
+    "name": "Default Gimbals",
+    "frames": {
+        "location": "./frames",
+        "fileNameFormat": "<x>_<y>.png",
+        "x": {
+            "min": -500,
+            "max": 500,
+            "increment": 10
+        },
+        "y": {
+            "min": -500,
+            "max": 500,
+            "increment": 10
+        }
+    }
+}
