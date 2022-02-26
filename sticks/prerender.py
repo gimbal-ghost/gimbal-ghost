@@ -56,8 +56,8 @@ class Multi_Render(bpy.types.Operator):
                 # Create a left padded file name based on stick x, y positions
                 file_name = f"{x_pos}_{y_pos}.png"
                 render_params = {
-                    "x_rotation": self.scale(x_pos, self.min_stick_position, self.max_stick_position, self.max_stick_deflection, -self.max_stick_deflection),
-                    "y_rotation": self.scale(y_pos, self.min_stick_position, self.max_stick_position, -self.max_stick_deflection, self.max_stick_deflection),
+                    "x_rotation": self.scale(x_pos, self.min_stick_position, self.max_stick_position, -self.max_stick_deflection, self.max_stick_deflection),
+                    "y_rotation": self.scale(y_pos, self.min_stick_position, self.max_stick_position, self.max_stick_deflection, -self.max_stick_deflection),
                     "output_file_path": os.path.join(self.render_directory_path, file_name)
                 }
                 self.render_queue.append(render_params)
@@ -99,8 +99,8 @@ class Multi_Render(bpy.types.Operator):
                 Gimbal = bpy.data.objects["Gimbal"]
                 Stick = bpy.data.objects["Stick"]
                 
-                Gimbal.rotation_euler[0] = render_params.get("x_rotation")
-                Stick.rotation_euler[1] = render_params.get("y_rotation")
+                Gimbal.rotation_euler[0] = render_params.get("y_rotation")
+                Stick.rotation_euler[1] = render_params.get("x_rotation")
                 
                 bpy.context.scene.render.filepath = render_params.get("output_file_path")
                 
