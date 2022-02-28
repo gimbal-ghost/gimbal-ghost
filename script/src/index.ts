@@ -4,6 +4,7 @@ import { readdirSync, unlinkSync, createReadStream, createWriteStream } from 'fs
 import { parse } from 'csv-parse';
 import { transform } from 'stream-transform';
 import { StickFrameInfo, StickPositions, Log, FramePaths, TransmitterModes } from './types';
+import { clamp, scale, nearest } from './utils';
 
 // TODO: Implement error handling
 // TODO: Implement args
@@ -48,41 +49,6 @@ import { StickFrameInfo, StickPositions, Log, FramePaths, TransmitterModes } fro
             yaw: Number(logData['rcCommand[2]']),
             throttle: Number(logData['rcCommand[3]']),
         }
-    }
-
-    // Convert a number from one scale to another scale
-    function scale(initialValue: number, initialMin: number, initialMax: number, finalMin: number, finalMax: number): number {
-        const initialRange = initialMax - initialMin;
-        const finalRange = finalMax - finalMin;
-        const fractionOfInitial = (initialValue - initialMin) / initialRange;
-        const finalValue = (fractionOfInitial * finalRange) + finalMin;
-        return finalValue;
-    }
-
-    function clamp(value: number, min: number, max: number): number {
-        return Math.min(Math.max(min, value), max);
-    }
-
-    // Find the nearest value in a range of numbers
-    function nearest(value: number, rangeMin: number, rangeMax: number, increment: number): number {
-        let nearestValue: number = 0;
-        for (let currentRangeValue = rangeMin; currentRangeValue <= rangeMax; currentRangeValue += increment) {
-            const nextRangeValue = (currentRangeValue + increment);
-            if (currentRangeValue <= value && value <= nextRangeValue) {
-                const differenceFromCurrent = value - currentRangeValue;
-                const differenceFromNext = nextRangeValue - value;
-
-                if (differenceFromCurrent <= differenceFromNext) {
-                    nearestValue = currentRangeValue;
-                    break;
-                }
-                else {
-                    nearestValue = nextRangeValue
-                    break;
-                }
-            }
-        }
-        return nearestValue;
     }
 
     // Convert the log stick position to a frame position that is within the allowable frames
