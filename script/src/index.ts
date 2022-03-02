@@ -5,10 +5,15 @@ import { parse } from 'csv-parse';
 import { transform } from 'stream-transform';
 import { StickFrameInfo, StickPositions, Log, FramePaths, TransmitterModes } from './types';
 import { clamp, scale, nearest } from './utils';
+import { readdir } from 'fs/promises';
+import { BlackBoxLog } from './BlackBoxLog';
 
 // TODO: Implement error handling
 // TODO: Implement args
 (async () => {
+
+
+
     const projectRootPath = path.resolve(__dirname, '../..');
 
     // Get the stick frame metadata from the manifest
@@ -18,10 +23,23 @@ import { clamp, scale, nearest } from './utils';
     const stickFramesDirectory = path.resolve(sitckDirectory, stickFrameInfo.frames.location);
 
     // Create the .csv file of blackbox data
+    const blackBoxDecodeExePath = path.resolve(projectRootPath, 'vendor/blackbox-tools-0.4.3-windows');
     const blackBoxFileDirectory = path.resolve(projectRootPath, 'blackbox-logs');
+    const blackBoxDirectoryFilenames = await readdir(blackBoxFileDirectory)
+    const blackBoxFilenames = blackBoxDirectoryFilenames.filter(filename => filename.endsWith('.bbl'));
+    const blackBoxFilePaths = blackBoxFilenames.map(filename => path.resolve(blackBoxFileDirectory, filename));
+    const blackBoxLogs = blackBoxFilePaths.map(blackBoxFilePath => new BlackBoxLog({ logPath: blackBoxFilePath }));
+
+    const decodePromises = blackBoxLogs.map(blackBoxLog => blackBoxLog.decode());
+
+    // Decode all of the blackbox logs
+    await Promise.all(decodePromises);
+
+
+
+    // TODO: Refactor this into the BlackBoxLog class
     const blackboxFilePath = path.resolve(projectRootPath, blackBoxFileDirectory, 'btfl_001.bbl');
     const blackboxDecodeArgs = [blackboxFilePath];
-    const blackBoxDecodeExePath = path.resolve(projectRootPath, 'vendor/blackbox-tools-0.4.3-windows');
     spawnSync('blackbox_decode.exe', blackboxDecodeArgs, { cwd: blackBoxDecodeExePath });
 
     // Remove the additional unused files that are generated
