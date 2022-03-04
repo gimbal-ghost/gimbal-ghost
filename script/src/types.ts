@@ -4,7 +4,7 @@ export interface StickAxisInfo {
     increment: number,
 }
 
-export interface StickFrameInfo {
+export interface StickManifestInfo {
     name: string,
     frames: {
         location: string,
@@ -21,13 +21,13 @@ export interface StickPositions {
     throttle: number,
 }
 
-export interface Log extends StickPositions {
+export interface LogEntry extends StickPositions {
     time: number,
 }
 
 export interface FramePaths {
-    left: string,
-    right: string,
+    leftFramePath: string,
+    rightFramePath: string,
 }
 
 export enum TransmitterModes {
