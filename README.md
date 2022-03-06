@@ -1,5 +1,7 @@
 # 👻 Gimbal Ghost CLI
-Generate a 3d video of your transmitter sticks from blackbox flight data.
+Generate a 3d video of your transmitter gimbal sticks from blackbox flight data.
+
+Say goodbye to the stick cam that takes up real estate in your video. It's like a ghost is moving your transmitter gimbals for you.
 
 ## 💻 Local Development
 The following dependencies will be needed to develop locally:
