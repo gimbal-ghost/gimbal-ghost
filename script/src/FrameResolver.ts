@@ -8,10 +8,10 @@ export interface FrameResolverOptions {
 }
 
 export class FrameResolver {
-    stickManifestFile: path.ParsedPath;
-    stickInfo: StickManifestInfo;
-    stickFramesDirectory: string;
-    transmitterMode: TransmitterModes;
+    private stickManifestFile: path.ParsedPath;
+    private stickInfo: StickManifestInfo;
+    private stickFramesDirectory: string;
+    private transmitterMode: TransmitterModes;
     fps: number;
     microSecPerFrame: number;
 
@@ -35,7 +35,7 @@ export class FrameResolver {
             roll: this.getFramePosition(stickPositions.roll, -500, 500, this.stickInfo.frames.x.min, this.stickInfo.frames.x.max, this.stickInfo.frames.x.increment),
             pitch: this.getFramePosition(stickPositions.pitch, -500, 500, this.stickInfo.frames.y.min, this.stickInfo.frames.y.max, this.stickInfo.frames.y.increment),
             yaw: this.getFramePosition(stickPositions.yaw, -500, 500, this.stickInfo.frames.x.min, this.stickInfo.frames.x.max, this.stickInfo.frames.x.increment),
-            throttle: this.getFramePosition(stickPositions.yaw, 1000, 2000, this.stickInfo.frames.y.min, this.stickInfo.frames.y.max, this.stickInfo.frames.y.increment),
+            throttle: this.getFramePosition(stickPositions.throttle, 1000, 2000, this.stickInfo.frames.y.min, this.stickInfo.frames.y.max, this.stickInfo.frames.y.increment),
         } as StickPositions
 
         switch (this.transmitterMode) {
@@ -63,7 +63,7 @@ export class FrameResolver {
     }
 
     // Convert the log stick position to a frame position that is within the allowable frames
-    getFramePosition(value: number, initialMin: number, initialMax: number, finalMin: number, finalMax: number, increment: number): number {
+    private getFramePosition(value: number, initialMin: number, initialMax: number, finalMin: number, finalMax: number, increment: number): number {
         const clampedValue = this.clamp(value, initialMin, initialMax);
         const scaledValue = this.scale(clampedValue, initialMin, initialMax, finalMin, finalMax);
         const nearestFrameValue = this.nearest(scaledValue, finalMin, finalMax, increment);
@@ -71,7 +71,7 @@ export class FrameResolver {
     }
 
     // Convert a number from one scale to another scale
-    scale(initialValue: number, initialMin: number, initialMax: number, finalMin: number, finalMax: number): number {
+    private scale(initialValue: number, initialMin: number, initialMax: number, finalMin: number, finalMax: number): number {
         const initialRange = initialMax - initialMin;
         const finalRange = finalMax - finalMin;
         const fractionOfInitial = (initialValue - initialMin) / initialRange;
@@ -80,12 +80,12 @@ export class FrameResolver {
     }
 
     // Force a number to within a range
-    clamp(value: number, min: number, max: number): number {
+    private clamp(value: number, min: number, max: number): number {
         return Math.min(Math.max(min, value), max);
     }
 
     // Find the nearest value in a range of numbers
-    nearest(value: number, rangeMin: number, rangeMax: number, increment: number): number {
+    private nearest(value: number, rangeMin: number, rangeMax: number, increment: number): number {
         let nearestValue: number = 0;
         for (let currentRangeValue = rangeMin; currentRangeValue <= rangeMax; currentRangeValue += increment) {
             const nextRangeValue = (currentRangeValue + increment);

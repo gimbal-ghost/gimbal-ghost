@@ -1,33 +1,38 @@
 import { spawn } from 'child_process';
-import { copyFileSync, createReadStream, createWriteStream, mkdtempSync, rmdirSync, WriteStream } from 'fs';
-import { readdir } from 'fs/promises';
-import { tmpdir } from 'os';
+import { copyFileSync, createReadStream, createWriteStream, mkdtempSync, WriteStream } from 'fs';
+import { readdir, rm } from 'fs/promises';
+import { loadavg, tmpdir } from 'os';
 import { parse } from 'csv-parse';
 import path from 'path';
 import { transform, Transformer } from 'stream-transform';
-import { LogEntry, StickPositions } from './types';
+import { DemuxFilePair, LogEntry, StickPositions } from './types';
 import { FrameResolver } from './FrameResolver';
 
 export interface BlackBoxLogOptions {
     logPath: string,
     frameResolver: FrameResolver,
+    outputDirectoryPath: string,
 }
 
 export class BlackBoxLog {
-    tempDirectory: string;
+    private tempDirectory: string;
     private blackboxDecodePath: string;
-    initialLogPath: string;
-    initialLogFile: path.ParsedPath;
-    tempLogPath: string;
-    tempLogFile: path.ParsedPath
-    frameResolver: FrameResolver;
+    private initialLogPath: string;
+    private initialLogFile: path.ParsedPath;
+    private tempLogPath: string;
+    private tempLogFile: path.ParsedPath
+    private frameResolver: FrameResolver;
+    private outputDirectoryPath: string;
+    private ffmpegPath: string;
 
-    constructor({ logPath, frameResolver } = {} as BlackBoxLogOptions) {
+    constructor({ logPath, frameResolver, outputDirectoryPath } = {} as BlackBoxLogOptions) {
         this.frameResolver = frameResolver;
         this.tempDirectory = mkdtempSync(path.join(tmpdir(), 'blackbox-sticks-generator-'));
         this.blackboxDecodePath = path.resolve(__dirname, '../../vendor/blackbox-tools-0.4.3-windows');
+        this.ffmpegPath = path.resolve(__dirname, '../../vendor/ffmpeg/bin');
         this.initialLogPath = logPath;
         this.initialLogFile = path.parse(this.initialLogPath);
+        this.outputDirectoryPath = outputDirectoryPath;
 
         if (this.initialLogFile.ext !== '.bbl') {
             throw Error(`Blackbox log files must end in .bbl. Filename passed: ${this.initialLogFile.base}`);
@@ -71,7 +76,67 @@ export class BlackBoxLog {
         });
     }
 
-    parseCSVLog(csvPath: string): Promise<void> {
+    render(): Promise<void[]> {
+        return this.getDemuxFilePairs().then(demuxFilePairs => {
+            const renderDemuxPairPromises = demuxFilePairs.map(demuxFilePair => this.renderDemuxPair(demuxFilePair));
+            return Promise.all(renderDemuxPairPromises);
+        })
+    }
+
+    private renderDemuxPair({ leftDemuxFilePath, rightDemuxFilePath } = {} as DemuxFilePair): Promise<void> {
+        const logName = this.getLogName(leftDemuxFilePath);
+        console.log(`[${logName}] Rendering`);
+
+        const outputFilePath = path.resolve(this.outputDirectoryPath, `${logName}.mov`)
+        return new Promise((resolve, reject) => {
+            const ffmpegArgs = [
+                '-f', // Force the input file format
+                'concat', // Use concat demuxer to get left image filenames and durations
+                '-safe', // Accept all filenames from the demux file
+                '0',
+                '-i', // First imput is the left demux txt file
+                leftDemuxFilePath,
+                '-f', // Force the input file format
+                'concat', // Use concat demuxer to get left image filenames and durations
+                '-safe', // Accept all filenames from the demux file
+                '0',
+                '-i', // Second imput is the right demux txt file
+                rightDemuxFilePath,
+                '-filter_complex', // add padding to left image, horizontally stack them, set output fps
+                `[0]pad=iw+75:color=black@0.0[left],[left][1]hstack=inputs=2,fps=${this.frameResolver.fps}`,
+                '-vsync',
+                'vfr', // Set the video sync method to drop timestamps 
+                '-vcodec',
+                'prores_ks', // Use apple prores encoding
+                '-pix_fmt',
+                'yuva444p10le', // Pixel format with alpha channel for transparency
+                '-profile:v',
+                '4444', // Set prores profile to 4444 for transparency
+                '-qscale:v',
+                '20', // Set quality, 1 (high) to 31 (low), and vary the bit rate accordingly
+                '-y', // Overwrite outputfiles without asking
+                outputFilePath,
+            ];
+
+            const ffmpegProcess = spawn('ffmpeg.exe', ffmpegArgs, { cwd: this.ffmpegPath });
+            ffmpegProcess.on('close', (code, signal) => {
+                if (code === 0) {
+                    console.log(`[${logName}] Rendered to ${outputFilePath}`);
+                    resolve();
+                }
+                else {
+                    const error = new Error(`Render process for ${logName} exited with non zero exit code: ${code}`);
+                    reject(error);
+                }
+            });
+
+            ffmpegProcess.on('error', (error) => {
+                reject(error);
+            });
+        });
+    }
+
+    private parseCSVLog(csvPath: string): Promise<void> {
         return new Promise((resolve, reject) => {
             const csvFile = path.parse(csvPath);
             console.log(`[${csvFile.base}] Parsing`);
@@ -104,7 +169,7 @@ export class BlackBoxLog {
         });
     }
 
-    logToDemuxTransform(leftDemuxFile: WriteStream, rightDemuxFile: WriteStream): Transformer {
+    private logToDemuxTransform(leftDemuxFile: WriteStream, rightDemuxFile: WriteStream): Transformer {
         let logStartTime = 0;
         let previousLog: LogEntry | null = null;
         let frame = 0;
@@ -122,8 +187,8 @@ export class BlackBoxLog {
                 } as StickPositions;
                 const { leftFramePath, rightFramePath } = this.frameResolver.generateFrameFileNames(stickPositions);
 
-                leftDemuxFile.write(`file '${leftFramePath}'\nduration ${1 / 25}\n`);
-                rightDemuxFile.write(`file '${rightFramePath}'\nduration ${1 / 25}\n`);
+                leftDemuxFile.write(`file '${leftFramePath}'\nduration ${1 / this.frameResolver.fps}\n`);
+                rightDemuxFile.write(`file '${rightFramePath}'\nduration ${1 / this.frameResolver.fps}\n`);
 
                 frame += 1;
                 previousLog = currentLog;
@@ -137,8 +202,8 @@ export class BlackBoxLog {
                 const stickPositions = this.interpolateStickPositions(currentLog, previousLog, currentFrameTime);
                 const { leftFramePath, rightFramePath } = this.frameResolver.generateFrameFileNames(stickPositions)
 
-                leftDemuxFile.write(`file '${leftFramePath}'\nduration ${1 / 25}\n`);
-                rightDemuxFile.write(`file '${rightFramePath}'\nduration ${1 / 25}\n`);
+                leftDemuxFile.write(`file '${leftFramePath}'\nduration ${1 / this.frameResolver.fps}\n`);
+                rightDemuxFile.write(`file '${rightFramePath}'\nduration ${1 / this.frameResolver.fps}\n`);
 
                 // Advance variables for next iteration
                 frame += 1;
@@ -149,7 +214,7 @@ export class BlackBoxLog {
         });
     }
 
-    convertLogDataToLogEntry(logData: any): LogEntry {
+    private convertLogDataToLogEntry(logData: any): LogEntry {
         return {
             time: Number(logData['time (us)']),
             roll: Number(logData['rcCommand[0]']),
@@ -159,22 +224,22 @@ export class BlackBoxLog {
         }
     }
 
-    interpolateStickPositions(currentLog: LogEntry, previousLog: LogEntry, currentFrameTime: number): StickPositions {
+    private interpolateStickPositions(currentLog: LogEntry, previousLog: LogEntry, currentFrameTime: number): StickPositions {
         // Interpolate between the previous record and current at the frame time
         const currentLogTime = currentLog.time;
         const timeBetweenLogs = currentLogTime - previousLog.time;
         const interpolatedTime = currentFrameTime - previousLog.time;
         const interpolationFactor = interpolatedTime / timeBetweenLogs;
 
-        const rollAvg = (previousLog.roll + currentLog.roll) / 2;
-        const pitchAvg = (previousLog.pitch + currentLog.pitch) / 2;
-        const yawAvg = (previousLog.yaw + currentLog.yaw) / 2;
-        const throttleAvg = (previousLog.throttle + currentLog.throttle) / 2;
+        const interpolatedRoll = previousLog.roll + ((currentLog.roll - previousLog.roll) * interpolationFactor);
+        const intterpolatedPitch = previousLog.pitch + ((currentLog.pitch - previousLog.pitch) * interpolationFactor);
+        const interpolatedYaw = previousLog.yaw + ((currentLog.yaw - previousLog.yaw) * interpolationFactor);
+        const interpolatedThrottle = previousLog.throttle + ((currentLog.throttle - previousLog.throttle) * interpolationFactor);
         const stickPositions = {
-            roll: rollAvg * interpolationFactor,
-            pitch: pitchAvg * interpolationFactor,
-            yaw: yawAvg * interpolationFactor,
-            throttle: throttleAvg * interpolationFactor,
+            roll: interpolatedRoll,
+            pitch: intterpolatedPitch,
+            yaw: interpolatedYaw,
+            throttle: interpolatedThrottle,
         } as StickPositions
         return stickPositions;
     }
@@ -194,8 +259,35 @@ export class BlackBoxLog {
             .map(filename => path.resolve(this.tempLogFile.dir, filename));
     }
 
+    // Get the left and right ffmpeg demux files from parsing
+    private async getDemuxFilePairs(): Promise<DemuxFilePair[]> {
+        const tempFiles = await readdir(this.tempDirectory);
+        const demuxLogNames = new Set(tempFiles
+            .filter(filename => filename.endsWith('.demux.txt'))
+            .map(this.getLogName)
+        );
+
+        // Create pairs of demux files
+        const demuxFilePairs = [...demuxLogNames].map(logName => {
+            const leftDemuxFilename = `${logName}.left.demux.txt`;
+            const rightDemuxFilename = `${logName}.right.demux.txt`;
+            return {
+                leftDemuxFilePath: path.resolve(this.tempLogFile.dir, leftDemuxFilename),
+                rightDemuxFilePath: path.resolve(this.tempLogFile.dir, rightDemuxFilename),
+            } as DemuxFilePair;
+        });
+        return demuxFilePairs;
+    }
+
+    // Take a file path and get the log name from the filename
+    private getLogName(filePath: string): string {
+        const file = path.parse(filePath);
+        const filename = file.base;
+        return filename.replace(/\.left\.demux\.txt|\.right\.demux\.txt|\.csv|\.event|\.gps\.csv|\.gps\.gpx/, '');
+    }
+
     // Be a good person and remove the temp directory once done
-    dispose() {
-        rmdirSync(this.tempDirectory);
+    dispose(): Promise<void> {
+        return rm(this.tempDirectory, { recursive: true, force: true });
     }
 }

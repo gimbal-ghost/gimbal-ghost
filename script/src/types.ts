@@ -36,3 +36,8 @@ export enum TransmitterModes {
     Mode3,
     Mode4,
 }
+
+export interface DemuxFilePair {
+    leftDemuxFilePath: string,
+    rightDemuxFilePath: string,
+}
