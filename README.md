@@ -1,4 +1,4 @@
-# 👻 Gimbal Ghost CLI 👻
+# 👻 Gimbal Ghost CLI
 Generate a 3d video of your transmitter sticks from blackbox flight data.
 
 ## 💻 Local Development
