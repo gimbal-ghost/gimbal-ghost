@@ -5,13 +5,13 @@
             "type": "node",
             "request": "launch",
             "name": "Debug TS",
-            "cwd": "${workspaceFolder}/script",
+            "cwd": "${workspaceFolder}",
             "runtimeArgs": [
                 "--require",
                 "ts-node/register"
             ],
             "args": [
-                "${workspaceFolder}/script/src/index.ts"
+                "${workspaceFolder}/src/index.ts"
             ]
         }
     ]

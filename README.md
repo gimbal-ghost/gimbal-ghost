@@ -14,7 +14,7 @@ The process of creating a 3d video of transmitter sticks from blackbox data is c
     * The prerender script moves the gimble in the x and y directions within a position range of -500 to 500 where center stick is represented by `(0, 0)`, upper right is `(500, 500)` and lower left if `(-500, -500)`.
     * The prerender script then uses blender to render a frame to a RBGA `.png` image file where the name of the file is the position of the stick in that frame, e.g. `-450_70.png`.
     * To save on file space, the prerender script subsamples the posible stick positions only rendering an image for positions in increments of 10 (adjustable in script).
-    * Information about the prerendered stick frames is stored in a `manifest.json` file and includes information about the image locations, x, y ranges and step size.
+    * Information about the prerendered stick frames is stored in a `gg-manifest.json` file and includes information about the image locations, x, y ranges and step size.
 
 2. Decode:
     * Blackbox files are decoded into CSV files using the betaflight blackbox_decode CLI tool.
@@ -23,7 +23,7 @@ The process of creating a 3d video of transmitter sticks from blackbox data is c
 3. Parse:
     * Each CSV file is transformed into a set of instructions for FFmpeg to use in assembling the rendered video.
     * The high frequency transmitter input data (roll, pitch, yaw, throttle) from the CSVs are downsampled to the user provided output video frames per second.
-    * The transmitter input data for each frame of video is resolved to an frame for the left and right gimbals by using the prerendered stick's `manifest.json` file.
+    * The transmitter input data for each frame of video is resolved to an frame for the left and right gimbals by using the prerendered stick's `gg-manifest.json` file.
     * The resolved frame paths are compiled into a left and right demux `.txt` file for use by FFmpeg in rendering.
 
 4. Render:
