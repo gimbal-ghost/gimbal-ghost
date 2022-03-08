@@ -27,7 +27,7 @@ export class BlackBoxLog {
 
     constructor({ logPath, frameResolver, outputDirectoryPath } = {} as BlackBoxLogOptions) {
         this.frameResolver = frameResolver;
-        this.tempDirectory = mkdtempSync(path.join(tmpdir(), 'gg-cli-'));
+        this.tempDirectory = mkdtempSync(path.join(tmpdir(), 'gimbal-ghost-'));
         this.blackboxDecodePath = path.resolve(__dirname, '../vendor/blackbox-tools-0.4.3-windows');
         this.ffmpegPath = path.resolve(__dirname, '../vendor/ffmpeg/bin');
         this.initialLogPath = logPath;
