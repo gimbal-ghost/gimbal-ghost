@@ -1,5 +1,4 @@
 import path from 'path';
-import { StickManifestInfo } from './types';
 import { readdir } from 'fs/promises';
 import { BlackBoxLog } from './BlackBoxLog';
 import { FrameResolver } from './FrameResolver';
@@ -16,12 +15,13 @@ import { FrameResolver } from './FrameResolver';
 
     // Create the .csv file of blackbox data
     const blackBoxFileDirectory = path.resolve(__dirname, '../test');
-    const blackBoxDirectoryFilenames = await readdir(blackBoxFileDirectory)
+    const blackBoxDirectoryFilenames = await readdir(blackBoxFileDirectory);
     const blackBoxFilenames = blackBoxDirectoryFilenames.filter(filename => filename.endsWith('.bbl'));
-    const blackBoxFilePaths = blackBoxFilenames.map(filename => path.resolve(blackBoxFileDirectory, filename));
+    const blackBoxFilePaths = blackBoxFilenames
+        .map(filename => path.resolve(blackBoxFileDirectory, filename));
     const blackBoxLogs = blackBoxFilePaths.map(blackBoxFilePath => new BlackBoxLog({
         logPath: blackBoxFilePath,
-        frameResolver: frameResolver,
+        frameResolver,
         outputDirectoryPath: blackBoxFileDirectory,
     }));
 

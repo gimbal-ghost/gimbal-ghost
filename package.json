@@ -1,37 +1,74 @@
 {
-  "name": "gimbal-ghost",
-  "version": "0.0.0",
-  "description": "Generate a 3d video of your transmitter sticks from blackbox flight data.",
-  "main": "build/index.js",
-  "scripts": {
-    "run:dev": "npx ts-node ./src/index.ts",
-    "compile": "npx tsc"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gimbal-ghost/gimbal-ghost.git"
-  },
-  "author": "Joshua Davidson",
-  "license": "GPL-3.0-or-later",
-  "bugs": {
-    "url": "https://github.com/gimbal-ghost/gimbal-ghost/issues"
-  },
-  "homepage": "https://github.com/gimbal-ghost/gimbal-ghost#readme",
-  "devDependencies": {
-    "@tsconfig/node16": "^1.0.2",
-    "@types/node": "^17.0.19",
-    "@typescript-eslint/eslint-plugin": "^5.12.1",
-    "@typescript-eslint/parser": "^5.12.1",
-    "eslint": "^8.9.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-airbnb-typescript": "^16.1.0",
-    "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-node": "^11.1.0",
-    "ts-node": "^10.5.0",
-    "typescript": "^4.5.5"
-  },
-  "dependencies": {
-    "csv-parse": "^5.0.4",
-    "stream-transform": "^3.0.4"
-  }
+    "name": "gimbal-ghost",
+    "version": "0.0.0",
+    "author": "Joshua Davidson",
+    "license": "GPL-3.0-or-later",
+    "description": "Generate a 3d video of your transmitter sticks from blackbox flight data.",
+    "main": "dist/main/index.cjs",
+    "scripts": {
+        "build": "electron-builder",
+        "debug": "npm run prebuild && vite ./packages/renderer",
+        "dev": "npm run lint && node scripts/watch.mjs",
+        "lint": "eslint .",
+        "prebuild": "npm run lint && npm run typecheck && node scripts/build.mjs",
+        "typecheck": "vue-tsc --project packages/renderer/tsconfig.json --noEmit"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/gimbal-ghost/gimbal-ghost.git"
+    },
+    "bugs": {
+        "url": "https://github.com/gimbal-ghost/gimbal-ghost/issues"
+    },
+    "homepage": "https://github.com/gimbal-ghost/gimbal-ghost#readme",
+    "engines": {
+        "node": ">=16.14.0",
+        "npm": ">=8.3.1"
+    },
+    "devDependencies": {
+        "@types/node": "^17.0.19",
+        "@typescript-eslint/eslint-plugin": "^5.12.1",
+        "@typescript-eslint/parser": "^5.12.1",
+        "@vitejs/plugin-vue": "^2.2.4",
+        "electron": "^17.1.2",
+        "electron-builder": "^22.14.13",
+        "eslint": "^8.9.0",
+        "eslint-config-airbnb-base": "^15.0.0",
+        "eslint-import-resolver-typescript": "^2.5.0",
+        "eslint-plugin-import": "^2.25.4",
+        "eslint-plugin-node": "^11.1.0",
+        "typescript": "^4.5.5",
+        "vite": "^2.8.6",
+        "vite-plugin-static-copy": "^0.4.0",
+        "vue": "^3.2.31",
+        "vue-tsc": "^0.32.1"
+    },
+    "dependencies": {
+        "csv-parse": "^5.0.4",
+        "stream-transform": "^3.0.4"
+    },
+    "build": {
+        "appId": "com.electron.gimbal-ghost",
+        "productName": "Gimbal Ghost",
+        "directories": {
+            "output": "releases/${version}"
+        },
+        "files": [
+            "dist"
+        ],
+        "win": {
+            "target": "nsis",
+            "artifactName": "${productName}-${version}.${ext}",
+            "icon": "dist/main/icon.ico"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowElevation": true,
+            "allowToChangeInstallationDirectory": true,
+            "installerIcon": "dist/main/icon.ico",
+            "uninstallerIcon": "dist/main/icon.ico",
+            "installerSidebar": "dist/main/sidebar.bmp",
+            "uninstallerSidebar": "dist/main/sidebar.bmp"
+        }
+    }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 export interface StickAxisInfo {
     min: number,
     max: number,
@@ -30,14 +31,16 @@ export interface FramePaths {
     rightFramePath: string,
 }
 
+export interface DemuxFilePair {
+    leftDemuxFilePath: string,
+    rightDemuxFilePath: string,
+}
+
+// See: https://github.com/typescript-eslint/typescript-eslint/issues/325
+// eslint-disable-next-line no-shadow
 export enum TransmitterModes {
     Mode1 = 1,
     Mode2,
     Mode3,
     Mode4,
-}
-
-export interface DemuxFilePair {
-    leftDemuxFilePath: string,
-    rightDemuxFilePath: string,
 }
