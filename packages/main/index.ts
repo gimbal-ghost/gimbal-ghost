@@ -38,7 +38,6 @@ async function createWindow() {
         // See: https://vitejs.dev/guide/env-and-mode.html#production-replacement
         const { env } = process;
         const url = `http://${env.VITE_DEV_SERVER_HOST}:${env.VITE_DEV_SERVER_PORT}`;
-        console.log('URL:', url);
         browserWindow.loadURL(url);
         browserWindow.webContents.openDevTools();
     }

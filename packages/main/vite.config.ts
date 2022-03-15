@@ -1,6 +1,5 @@
 import { builtinModules } from 'module';
 import { defineConfig } from 'vite';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
 import pkg from '../../package.json';
 
 export default defineConfig({
@@ -25,14 +24,5 @@ export default defineConfig({
                 ...Object.keys(pkg.dependencies || {}),
             ],
         },
-
     },
-    plugins: [
-        viteStaticCopy({
-            targets: [
-                { src: 'vendor/**/*', dest: '../../dist/main/vendor' },
-            ],
-            flatten: false,
-        }),
-    ],
 });
