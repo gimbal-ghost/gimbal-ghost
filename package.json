@@ -6,12 +6,12 @@
     "description": "Generate a 3d video of your transmitter sticks from blackbox flight data.",
     "main": "dist/main/index.cjs",
     "scripts": {
-        "build": "electron-builder",
-        "debug": "npm run prebuild && vite ./packages/renderer",
-        "dev": "npm run lint && node scripts/watch.mjs",
-        "lint": "eslint .",
-        "prebuild": "npm run lint && npm run typecheck && node scripts/build.mjs",
-        "typecheck": "vue-tsc --project packages/renderer/tsconfig.json --noEmit"
+        "predist": "npm run lint && npm run typecheck && npm run build",
+        "dist": "electron-builder",
+        "build": "node scripts/build.mjs",
+        "lint": "eslint --fix .",
+        "typecheck": "vue-tsc --project packages/renderer/tsconfig.json --noEmit",
+        "watch": "node scripts/watch.mjs"
     },
     "repository": {
         "type": "git",

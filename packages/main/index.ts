@@ -29,15 +29,16 @@ async function createWindow() {
     });
 
     // If we are in production then grab index locally
-    if (app.isPackaged || process.env.DEBUG) {
+    if (app.isPackaged) {
         browserWindow.loadFile(join(__dirname, '../renderer/index.html'));
     }
     // Otherwise use the dev server
     else {
-        // Reassign in development to avoid vite static replacement
+        // Vite Environment variables set in watch script
+        // Avoid process.env.<var> syntax which vite statically replaces
         // See: https://vitejs.dev/guide/env-and-mode.html#production-replacement
-        const { env } = process;
-        const url = `http://${env.VITE_DEV_SERVER_HOST}:${env.VITE_DEV_SERVER_PORT}`;
+        // eslint-disable-next-line dot-notation
+        const url = `http://${process.env['VITE_DEV_SERVER_HOST']}:${process.env['VITE_DEV_SERVER_PORT']}`;
         browserWindow.loadURL(url);
         browserWindow.webContents.openDevTools();
     }
