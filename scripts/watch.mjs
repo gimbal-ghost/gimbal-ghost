@@ -11,7 +11,6 @@ function watchMain(server) {
      */
     let electronProcess = null;
     const address = server.httpServer.address();
-    console.log('address', address);
     // Merge our dev server environment variables to expose to electron process
     const env = {
         ...process.env,

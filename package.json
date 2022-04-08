@@ -44,6 +44,7 @@
     },
     "dependencies": {
         "csv-parse": "^5.0.4",
+        "electron-store": "^8.0.1",
         "stream-transform": "^3.0.4"
     },
     "build": {
