@@ -3,9 +3,12 @@ import { readdir } from 'fs/promises';
 import { BlackBoxLog } from './BlackBoxLog';
 import { FrameResolver } from './FrameResolver';
 
+export interface RenderLogsOptions {
+    blackBoxDirectories: string[]
+}
+
 // TODO: Implement error handling
-// TODO: Implement args
-(async () => {
+export async function renderLogs({ blackBoxDirectories } = {} as RenderLogsOptions) {
     // Create a frame resolver with the stick manifest
     const stickManifestFilePath = path.resolve(__dirname, '../../gg-default-sticks/gg-manifest.json');
     const frameResolver = new FrameResolver({
@@ -41,4 +44,4 @@ import { FrameResolver } from './FrameResolver';
     const disposePromises = blackBoxLogs.map(blackBoxLog => blackBoxLog.dispose());
     await Promise.all(disposePromises);
     console.log('Complete!');
-})();
+}

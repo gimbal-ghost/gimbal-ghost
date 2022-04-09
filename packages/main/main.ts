@@ -1,8 +1,9 @@
 import {
-    app, BrowserWindow, ipcMain, shell, screen,
+    app, BrowserWindow, ipcMain, shell, screen, BrowserWindowConstructorOptions,
 } from 'electron';
 import { release } from 'os';
 import { join } from 'path';
+import { registerIPCEvents } from './ipc/ipc';
 import { Settings } from './settings';
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) {
@@ -23,18 +24,26 @@ if (!app.requestSingleInstanceLock()) {
 let window: BrowserWindow | null = null;
 
 async function createWindow() {
-    window = new BrowserWindow({
+    const windowOptions: BrowserWindowConstructorOptions = {
         webPreferences: {
-            preload: join(__dirname, '../preload/index.cjs'),
+            preload: join(__dirname, '../preload/preload.cjs'),
         },
         width: 800,
         height: 600,
-        x: Settings.get('windowPosition').x,
-        y: Settings.get('windowPosition').y,
         autoHideMenuBar: true,
         resizable: false,
         maximizable: false,
-    });
+    };
+
+    if (Settings.get('firstLoad')) {
+        Settings.set('firstLoad', false);
+    }
+    else {
+        windowOptions.x = Settings.get('windowPosition').x;
+        windowOptions.y = Settings.get('windowPosition').y;
+    }
+
+    window = new BrowserWindow(windowOptions);
     // No menu is needed
     window.removeMenu();
 
@@ -61,11 +70,6 @@ async function createWindow() {
         window.webContents.openDevTools({ mode: 'detach', activate: false });
     }
 
-    // Test active push message to Renderer-process
-    window.webContents.on('did-finish-load', () => {
-        window?.webContents.send('main-process-message', (new Date()).toLocaleString());
-    });
-
     // Make all links open with the browser, not with the application
     window.webContents.setWindowOpenHandler(({ url }) => {
         if (url.startsWith('https:')) {
@@ -79,6 +83,7 @@ async function createWindow() {
 app.enableSandbox();
 
 app.whenReady().then(() => {
+    registerIPCEvents();
     createWindow();
 });
 

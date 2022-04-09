@@ -8,7 +8,7 @@ export default defineConfig({
         outDir: '../../dist/main',
         emptyOutDir: true,
         lib: {
-            entry: 'index.ts',
+            entry: 'main.ts',
             formats: ['cjs'],
             fileName: () => '[name].cjs',
         },

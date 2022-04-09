@@ -8,7 +8,7 @@ export default defineConfig({
         outDir: '../../dist/preload',
         emptyOutDir: true,
         lib: {
-            entry: 'index.ts',
+            entry: 'preload.ts',
             formats: ['cjs'],
             fileName: () => '[name].cjs',
         },

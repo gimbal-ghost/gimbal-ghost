@@ -1,6 +1,7 @@
 import { Schema } from 'electron-store';
 
 export interface ISettings {
+    firstLoad: boolean,
     windowPosition: {
         x: number,
         y: number
@@ -8,6 +9,10 @@ export interface ISettings {
 }
 
 export const schema: Schema<ISettings> = {
+    firstLoad: {
+        type: 'boolean',
+        default: true,
+    },
     windowPosition: {
         type: 'object',
         default: {},
