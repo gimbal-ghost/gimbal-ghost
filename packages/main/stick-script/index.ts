@@ -4,37 +4,24 @@ import { BlackBoxLog } from './BlackBoxLog';
 import { FrameResolver } from './FrameResolver';
 
 export interface RenderLogsOptions {
-    blackBoxDirectories: string[]
+    blackboxPaths: string[]
 }
 
-async function getBlackBoxLogsFromDirectories(
-    directories: string[],
+async function getBlackBoxLogObjects(
+    blackboxPaths: string[],
     frameResolver: FrameResolver,
 ): Promise<BlackBoxLog[]> {
-    const blackBoxLogsPromies = directories.map(async directory => {
-        const blackBoxFileDirectory = path.resolve(directory);
+    const blackboxLogs = blackboxPaths.map(blackboxPath => new BlackBoxLog({
+        logPath: blackboxPath,
+        frameResolver,
+        outputDirectoryPath: path.dirname(blackboxPath),
+    }));
 
-        const blackBoxDirectoryFilenames = await readdir(blackBoxFileDirectory);
-
-        const blackBoxFilenames = blackBoxDirectoryFilenames.filter(filename => filename.endsWith('.bbl'));
-
-        const blackBoxFilePaths = blackBoxFilenames
-            .map(filename => path.resolve(blackBoxFileDirectory, filename));
-
-        const blackBoxLogsInDirectory = blackBoxFilePaths.map(blackBoxFilePath => new BlackBoxLog({
-            logPath: blackBoxFilePath,
-            frameResolver,
-            outputDirectoryPath: blackBoxFileDirectory,
-        }));
-        return blackBoxLogsInDirectory
-    });
-
-    const blackBoxLogs = (await Promise.all(blackBoxLogsPromies)).flat();
-    return blackBoxLogs;
+    return blackboxLogs
 }
 
 // TODO: Implement error handling
-export async function renderLogs({ blackBoxDirectories } = {} as RenderLogsOptions): Promise<boolean> {
+export async function renderLogs({ blackboxPaths } = {} as RenderLogsOptions): Promise<boolean> {
     try {
         // Create a frame resolver with the stick manifest
         const stickManifestFilePath = path.resolve(__dirname, '../../../gg-default-sticks/gg-manifest.json');
@@ -44,7 +31,7 @@ export async function renderLogs({ blackBoxDirectories } = {} as RenderLogsOptio
         });
 
         // Create the .csv file of blackbox data
-        const blackBoxLogs = await getBlackBoxLogsFromDirectories(blackBoxDirectories, frameResolver);
+        const blackBoxLogs = await getBlackBoxLogObjects(blackboxPaths, frameResolver);
 
         // Decode all of the blackbox logs
         const decodePromises = blackBoxLogs.map(blackBoxLog => blackBoxLog.decode());

@@ -2,12 +2,12 @@ import { contextBridge, ipcRenderer } from 'electron';
 import { RenderLogsOptions } from '../main/stick-script'
 
 export type ContextBridgeAPI = {
-    getDirectory: () => Promise<string | null>,
+    getBlackboxFilePaths: () => Promise<string | null>,
     render: (renderOptions: RenderLogsOptions) => Promise<Error | boolean>,
 }
 
 const api: ContextBridgeAPI = {
-    getDirectory: () => ipcRenderer.invoke('getDirectory'),
+    getBlackboxFilePaths: () => ipcRenderer.invoke('getBlackboxFilePaths'),
     render: (renderOptions: RenderLogsOptions) => ipcRenderer.invoke('render', renderOptions),
 };
 

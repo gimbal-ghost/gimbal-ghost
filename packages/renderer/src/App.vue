@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive } from 'vue';
 
 interface State {
-    directoryPathSet: Set<string>,
+    blackboxPaths: Set<string>,
     message: null | string,
 }
 
 const state: State = reactive({
-    directoryPathSet: new Set(),
+    blackboxPaths: new Set(),
     message: null,
 });
 
-const directoryPaths = computed(() => {
-    return [...state.directoryPathSet];
+const paths = computed(() => {
+    return [...state.blackboxPaths];
 });
 
-async function getDirectory() {
+async function getBlackboxFilePaths() {
     state.message = null;
-    const directoryPath = await window.electron.getDirectory();
-    if (directoryPath) {
-        state.directoryPathSet.add(directoryPath);
+    const blackboxPaths: string[] | null = await window.electron.getBlackboxFilePaths();
+    if (blackboxPaths) {
+        blackboxPaths.forEach(path => state.blackboxPaths.add(path));
     }
 }
 
 async function renderLogs() {
     state.message = 'Rendering...';
-    const renderSuccessful = await window.electron.render({ blackBoxDirectories: directoryPaths.value });
+    const renderSuccessful = await window.electron.render({ blackboxPaths: paths.value });
     if (renderSuccessful) {
         state.message = 'Render Complete';
     }
@@ -36,10 +36,10 @@ async function renderLogs() {
 </script>
 
 <template>
-    <button type="button" @click="getDirectory">Add Directory</button>
+    <button type="button" @click="getBlackboxFilePaths">Add Directory</button>
     <br />
     <ul>
-        <li v-for="path in directoryPaths">{{ path }}</li>
+        <li v-for="path in paths">{{ path }}</li>
     </ul>
     <button type="button" @click="renderLogs">Render</button>
     <p v-if="state.message">{{ state.message }}</p>

@@ -1,14 +1,17 @@
 import { ipcMain, dialog } from 'electron';
 import { renderLogs, RenderLogsOptions } from '../stick-script';
 
-async function getDirectory(): Promise<string | null> {
+async function getBlackboxFilePaths(): Promise<string[] | null> {
     const { canceled, filePaths } = await dialog.showOpenDialog({
-        title: 'Select directory dontaining blackbox files',
+        title: 'Blackbox Files',
         buttonLabel: 'Select',
-        properties: ['openDirectory'],
+        filters: [
+            { name: 'Blackbox Files', extensions: ['bbl'] }
+        ],
+        properties: ['openFile', 'multiSelections', 'dontAddToRecent'],
     });
     if (!canceled) {
-        return filePaths[0];
+        return filePaths;
     }
     return null;
 }
@@ -18,6 +21,6 @@ async function render(event: any, options: RenderLogsOptions): Promise<boolean> 
 }
 
 export function registerIPCEvents(): void {
-    ipcMain.handle('getDirectory', getDirectory);
+    ipcMain.handle('getBlackboxFilePaths', getBlackboxFilePaths);
     ipcMain.handle('render', render);
 }
