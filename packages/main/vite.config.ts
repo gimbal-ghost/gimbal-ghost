@@ -1,12 +1,13 @@
 import { builtinModules } from 'module';
 import { defineConfig } from 'vite';
+import copy from 'rollup-plugin-copy';
 import pkg from '../../package.json';
 
 export default defineConfig({
     root: __dirname,
     build: {
         outDir: '../../dist/main',
-        emptyOutDir: true,
+        emptyOutDir: false,
         lib: {
             entry: 'main.ts',
             formats: ['cjs'],
@@ -25,4 +26,12 @@ export default defineConfig({
             ],
         },
     },
+    plugins: [
+        copy({
+            targets: [
+                { src: 'packages/main/vendor/**/*', dest: 'dist/main/vendor' }
+            ],
+            hook: 'writeBundle',
+        }),
+    ],
 });

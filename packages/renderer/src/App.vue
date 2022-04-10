@@ -3,10 +3,12 @@ import { computed, reactive, ref } from 'vue';
 
 interface State {
     directoryPathSet: Set<string>,
+    message: null | string,
 }
 
 const state: State = reactive({
     directoryPathSet: new Set(),
+    message: null,
 });
 
 const directoryPaths = computed(() => {
@@ -14,10 +16,21 @@ const directoryPaths = computed(() => {
 });
 
 async function getDirectory() {
+    state.message = null;
     const directoryPath = await window.electron.getDirectory();
-    console.log('directoryPath', directoryPath);
     if (directoryPath) {
         state.directoryPathSet.add(directoryPath);
+    }
+}
+
+async function renderLogs() {
+    state.message = 'Rendering...';
+    const renderSuccessful = await window.electron.render({ blackBoxDirectories: directoryPaths.value });
+    if (renderSuccessful) {
+        state.message = 'Render Complete';
+    }
+    else {
+        state.message = 'Render Error';
     }
 }
 </script>
@@ -28,8 +41,8 @@ async function getDirectory() {
     <ul>
         <li v-for="path in directoryPaths">{{ path }}</li>
     </ul>
+    <button type="button" @click="renderLogs">Render</button>
+    <p v-if="state.message">{{ state.message }}</p>
 </template>
 
-<style>
-/* @import "./assets/base.css"; */
-</style>
+<style>/* @import "./assets/base.css"; */</style>

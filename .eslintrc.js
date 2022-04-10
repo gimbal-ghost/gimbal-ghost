@@ -26,6 +26,7 @@ module.exports = {
         'arrow-parens': ['error', 'as-needed'],
         'brace-style': ['error', 'stroustrup'],
         'nonblock-statement-body-position': ['error', 'below'],
+        'max-len': ['error', { code: 120 }]
         // Import
         'import/prefer-default-export': 'off',
         'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
