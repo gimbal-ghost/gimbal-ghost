@@ -3,11 +3,7 @@ Generate a 3d video of your transmitter gimbal sticks from blackbox flight data.
 
 Say goodbye to the stick cam that takes up real estate in your video. It's like a ghost is moving your transmitter gimbals for you.
 
-## 💻 Local Development
-The following dependencies will be needed to develop locally:
-* [Blender v2.83 LTS](https://www.blender.org/download/lts/2-93/)
-
-### Architecture
+## 🏗️ Architecture
 The process of creating a 3d video of transmitter sticks from blackbox data is comprised of 3 steps:
 
 1. Decode:
@@ -28,7 +24,5 @@ The process of creating a 3d video of transmitter sticks from blackbox data is c
 
 ## 📝 License
 Licensed under GPLv3.
-
-Gimbal and stick blender model modified from Bastian Sondermann's [Blackbox Sticks Exporter 3D](https://github.com/bsondermann/BlackboxSticksExporter3D).
 
 Blackbox files decoded using [Betaflight Blackbox Tools](https://github.com/betaflight/blackbox-tools).
