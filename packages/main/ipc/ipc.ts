@@ -1,5 +1,5 @@
 import { ipcMain, dialog } from 'electron';
-import { renderLogs, RenderLogsOptions } from '../stick-script';
+import { renderLogs, RenderLogsOptions } from '../renderer';
 
 async function getBlackboxFilePaths(): Promise<string[] | null> {
     const { canceled, filePaths } = await dialog.showOpenDialog({

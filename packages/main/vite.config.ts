@@ -29,7 +29,8 @@ export default defineConfig({
     plugins: [
         copy({
             targets: [
-                { src: 'packages/main/vendor/**/*', dest: 'dist/main/vendor' }
+                { src: 'packages/main/vendor', dest: 'dist/main' },
+                { src: 'packages/main/default-gimbals', dest: 'dist/main' },
             ],
             hook: 'writeBundle',
         }),

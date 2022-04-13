@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { RenderLogsOptions } from '../main/stick-script'
+import { RenderLogsOptions } from '../main/renderer'
 
 export type ContextBridgeAPI = {
     getBlackboxFilePaths: () => Promise<string | null>,
