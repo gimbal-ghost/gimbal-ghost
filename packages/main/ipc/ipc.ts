@@ -6,7 +6,7 @@ async function getBlackboxFilePaths(): Promise<string[] | null> {
         title: 'Blackbox Files',
         buttonLabel: 'Select',
         filters: [
-            { name: 'Blackbox Files', extensions: ['bbl'] }
+            { name: 'Blackbox Files', extensions: ['bbl'] },
         ],
         properties: ['openFile', 'multiSelections', 'dontAddToRecent'],
     });
@@ -17,7 +17,7 @@ async function getBlackboxFilePaths(): Promise<string[] | null> {
 }
 
 async function render(event: any, options: RenderLogsOptions): Promise<boolean> {
-    return await renderLogs(options);
+    return renderLogs(options);
 }
 
 export function registerIPCEvents(): void {

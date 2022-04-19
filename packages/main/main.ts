@@ -1,5 +1,5 @@
 import {
-    app, BrowserWindow, ipcMain, shell, screen, BrowserWindowConstructorOptions,
+    app, BrowserWindow, shell, BrowserWindowConstructorOptions,
 } from 'electron';
 import { release } from 'os';
 import { join } from 'path';

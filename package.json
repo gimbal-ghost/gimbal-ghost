@@ -1,14 +1,14 @@
 {
     "name": "gimbal-ghost",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "author": "Joshua Davidson",
     "license": "GPL-3.0-or-later",
     "description": "Generate a 3d video of your transmitter sticks from blackbox flight data.",
     "main": "dist/main/main.cjs",
     "scripts": {
-        "predist": "npm run lint && npm run typecheck && npm run build",
-        "dist": "electron-builder",
-        "build": "node scripts/build.mjs",
+        "prebuild": "npm run lint && npm run typecheck && node scripts/build.mjs",
+        "build": "electron-builder --windows",
+        "release": "npm run build -- --publish always",
         "lint": "eslint --fix .",
         "typecheck": "vue-tsc --project packages/renderer/tsconfig.json --noEmit",
         "watch": "node scripts/watch.mjs"
@@ -58,7 +58,14 @@
             "dist"
         ],
         "win": {
-            "target": "nsis",
+            "target": [
+                {
+                    "target": "nsis",
+                    "arch": [
+                        "x64"
+                    ]
+                }
+            ],
             "artifactName": "${productName}-${version}.${ext}",
             "icon": "dist/main/icon.ico"
         },

@@ -34,6 +34,7 @@ export class BlackBoxLog {
     private outputDirectoryPath: string;
 
     private ffmpegPath: string;
+
     constructor({ logPath, frameResolver, outputDirectoryPath } = {} as BlackBoxLogOptions) {
         this.frameResolver = frameResolver;
         this.tempDirectory = mkdtempSync(path.join(tmpdir(), 'gimbal-ghost-'));
@@ -67,7 +68,9 @@ export class BlackBoxLog {
                     });
                 }
                 else {
-                    const error = new Error(`Decode process for ${this.tempLogFile.base} exited with non zero exit code: ${code}`);
+                    const error = new Error(
+                        `Decode process for ${this.tempLogFile.base} exited with non zero exit code: ${code}`,
+                    );
                     reject(error);
                 }
             });
@@ -176,7 +179,9 @@ export class BlackBoxLog {
                 .on('finish', () => {
                     leftDemuxFile.end();
                     rightDemuxFile.end();
-                    console.log(`[${csvFile.base}] Parsed into:\n${leftDemuxOutputFilename}\n${rightDemuxOutputFilename}`);
+                    console.log(
+                        `[${csvFile.base}] Parsed into:\n${leftDemuxOutputFilename}\n${rightDemuxOutputFilename}`,
+                    );
                     resolve();
                 })
                 .on('error', error => {

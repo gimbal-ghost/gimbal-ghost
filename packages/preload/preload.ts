@@ -1,8 +1,9 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { RenderLogsOptions } from '../main/renderer'
+import { RenderLogsOptions } from '../main/renderer';
 
 export type ContextBridgeAPI = {
     getBlackboxFilePaths: () => Promise<string | null>,
+    // eslint-disable-next-line no-unused-vars
     render: (renderOptions: RenderLogsOptions) => Promise<Error | boolean>,
 }
 

@@ -1,5 +1,4 @@
 import path from 'path';
-import { readdir } from 'fs/promises';
 import { BlackBoxLog } from './BlackBoxLog';
 import { FrameResolver } from './FrameResolver';
 
@@ -17,7 +16,7 @@ async function getBlackBoxLogObjects(
         outputDirectoryPath: path.dirname(blackboxPath),
     }));
 
-    return blackboxLogs
+    return blackboxLogs;
 }
 
 // TODO: Implement error handling

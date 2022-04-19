@@ -83,24 +83,96 @@ export class FrameResolver {
         switch (this.transmitterMode) {
             case TransmitterModes.Mode1: {
                 return {
-                    leftFramePath: path.resolve(this.stickFramesDirectory, this.stickInfo.frames.fileNameFormat.replace('<x>', frameStickPositions.yaw.toString()).replace('<y>', frameStickPositions.pitch.toString())),
-                    rightFramePath: path.resolve(this.stickFramesDirectory, this.stickInfo.frames.fileNameFormat.replace('<x>', frameStickPositions.roll.toString()).replace('<y>', frameStickPositions.throttle.toString())),
+                    leftFramePath: path.resolve(
+                        this.stickFramesDirectory,
+                        this.stickInfo.frames.fileNameFormat.replace(
+                            '<x>',
+                            frameStickPositions.yaw.toString(),
+                        ).replace(
+                            '<y>',
+                            frameStickPositions.pitch.toString(),
+                        ),
+                    ),
+                    rightFramePath: path.resolve(
+                        this.stickFramesDirectory,
+                        this.stickInfo.frames.fileNameFormat.replace(
+                            '<x>',
+                            frameStickPositions.roll.toString(),
+                        ).replace(
+                            '<y>',
+                            frameStickPositions.throttle.toString(),
+                        ),
+                    ),
                 } as FramePaths;
             }
             case TransmitterModes.Mode2:
                 return {
-                    leftFramePath: path.resolve(this.stickFramesDirectory, this.stickInfo.frames.fileNameFormat.replace('<x>', frameStickPositions.yaw.toString()).replace('<y>', frameStickPositions.throttle.toString())),
-                    rightFramePath: path.resolve(this.stickFramesDirectory, this.stickInfo.frames.fileNameFormat.replace('<x>', frameStickPositions.roll.toString()).replace('<y>', frameStickPositions.pitch.toString())),
+                    leftFramePath: path.resolve(
+                        this.stickFramesDirectory,
+                        this.stickInfo.frames.fileNameFormat.replace(
+                            '<x>',
+                            frameStickPositions.yaw.toString(),
+                        ).replace(
+                            '<y>',
+                            frameStickPositions.throttle.toString(),
+                        ),
+                    ),
+                    rightFramePath: path.resolve(
+                        this.stickFramesDirectory,
+                        this.stickInfo.frames.fileNameFormat.replace(
+                            '<x>',
+                            frameStickPositions.roll.toString(),
+                        ).replace(
+                            '<y>',
+                            frameStickPositions.pitch.toString(),
+                        ),
+                    ),
                 } as FramePaths;
             case TransmitterModes.Mode3:
                 return {
-                    leftFramePath: path.resolve(this.stickFramesDirectory, this.stickInfo.frames.fileNameFormat.replace('<x>', frameStickPositions.roll.toString()).replace('<y>', frameStickPositions.pitch.toString())),
-                    rightFramePath: path.resolve(this.stickFramesDirectory, this.stickInfo.frames.fileNameFormat.replace('<x>', frameStickPositions.yaw.toString()).replace('<y>', frameStickPositions.throttle.toString())),
+                    leftFramePath: path.resolve(
+                        this.stickFramesDirectory,
+                        this.stickInfo.frames.fileNameFormat.replace(
+                            '<x>',
+                            frameStickPositions.roll.toString(),
+                        ).replace(
+                            '<y>',
+                            frameStickPositions.pitch.toString(),
+                        ),
+                    ),
+                    rightFramePath: path.resolve(
+                        this.stickFramesDirectory,
+                        this.stickInfo.frames.fileNameFormat.replace(
+                            '<x>',
+                            frameStickPositions.yaw.toString(),
+                        ).replace(
+                            '<y>',
+                            frameStickPositions.throttle.toString(),
+                        ),
+                    ),
                 } as FramePaths;
             default:
                 return {
-                    leftFramePath: path.resolve(this.stickFramesDirectory, this.stickInfo.frames.fileNameFormat.replace('<x>', frameStickPositions.roll.toString()).replace('<y>', frameStickPositions.throttle.toString())),
-                    rightFramePath: path.resolve(this.stickFramesDirectory, this.stickInfo.frames.fileNameFormat.replace('<x>', frameStickPositions.yaw.toString()).replace('<y>', frameStickPositions.pitch.toString())),
+                    leftFramePath: path.resolve(
+                        this.stickFramesDirectory,
+                        this.stickInfo.frames.fileNameFormat.replace(
+                            '<x>',
+                            frameStickPositions.roll.toString(),
+                        ).replace(
+                            '<y>',
+                            frameStickPositions.throttle.toString(),
+                        ),
+                    ),
+                    rightFramePath: path.resolve(
+                        this.stickFramesDirectory,
+                        this.stickInfo.frames.fileNameFormat.replace(
+                            '<x>',
+                            frameStickPositions.yaw.toString(),
+                        ).replace(
+                            '<y>',
+                            frameStickPositions.pitch.toString(),
+                        ),
+                    ),
                 } as FramePaths;
         }
     }
