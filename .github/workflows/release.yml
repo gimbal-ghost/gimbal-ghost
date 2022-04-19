@@ -24,3 +24,7 @@ jobs:
       
       - name: Release
         run: npm run release
+
+env:
+  # Used by electron-builder to publish release
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
