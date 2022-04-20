@@ -29,6 +29,9 @@ jobs:
       - name: Set Version Environment Variable
         run: echo "VERSION=$(node -pe "require('./package.json').version")" >> $GITHUB_ENV
 
+      - name: Test VERSION
+        run: echo $VERSION
+
       - name: Create Release Pull Request
         id: changesets
         uses: changesets/action@v1
