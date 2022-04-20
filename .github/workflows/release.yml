@@ -25,7 +25,7 @@ jobs:
       
       - name: NPM Install
         run: npm install
-      
+
       - name: Set Version Environment Variable
         run: 'echo "VERSION=$(node -pe "require('./package.json').version") >> $GITHUB_ENV'
 
