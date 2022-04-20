@@ -1,6 +1,9 @@
 name: Release
 
 on:
+  # push:
+  #   branches:
+  #     - master
   workflow_dispatch:
 
 jobs:
@@ -10,18 +13,48 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-      
+        with:
+          # Grab all the git history for building changelog
+          fetch-depth: 0
+
       - name: Setup Node.js environment
         uses: actions/setup-node@v3.1.1
         with:
           node-version: 16.14.x
           cache: npm
-      
+
       - name: NPM Install
         run: npm install
-      
-      - name: Release
-        run: npm run release
+
+      - name: Set Version Environment Variable
+        run: echo "VERSION=$(node -pe "require('./package.json').version")" >> $GITHUB_ENV
+
+      - name: Create Release Pull Request
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          commit: version for release
+          title: Version and Release
         env:
-          # Used by electron-builder to publish release
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build with Electron Builder
+        # If the current push to master has no changesets then it is the merged PR for versioning and releasing
+        # TODO: This assumes that there are not commits to master without changesets--fix this
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: npm run build
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1.10.0
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        with:
+          tag: ${{ env.VERSION }}
+          commit: main
+          artifacts: "releases/**/*.exe, releases/**/*.exe.blockmap, releases/**/latest.yml"
+          bodyFile: "CHANGELOG.md"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: true
+
+
+
+        
