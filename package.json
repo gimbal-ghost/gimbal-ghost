@@ -8,7 +8,6 @@
     "scripts": {
         "prebuild": "npm run lint && npm run typecheck && node scripts/build.mjs",
         "build": "electron-builder --windows",
-        "release": "npm run build -- --publish always",
         "lint": "eslint --fix .",
         "typecheck": "vue-tsc --project packages/renderer/tsconfig.json --noEmit",
         "watch": "node scripts/watch.mjs"
