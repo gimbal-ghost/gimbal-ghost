@@ -50,7 +50,7 @@ jobs:
           tag: ${{ steps.get-version.outputs.version }}
 
       - name: Verify Commit, Push, Tag, Tag Push Success
-        if: ${{ steps.commit-version.outputs.committed == 'true' && steps.commit-version.outputs.pushed == 'true' && steps.commit-version.outputs.tagged == 'true'  && steps.commit-version.outputs.tag_pushed == 'true'}}
+        if: ${{ steps.commit-version.outputs.committed != 'true' || steps.commit-version.outputs.pushed != 'true' || steps.commit-version.outputs.tagged != 'true' || steps.commit-version.outputs.tag_pushed != 'true'}}
         uses: actions/github-script@v3
         with:
           script: |
@@ -61,7 +61,6 @@ jobs:
 
       - name: Release
         uses: ncipollo/release-action@v1.10.0
-        if: steps.changesets.outputs.hasChangesets == 'false'
         with:
           artifacts: "releases/**/*.exe, releases/**/*.exe.blockmap, releases/**/latest.yml"
           bodyFile: "CHANGELOG.md"
