@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       prerelease:
-        description: Mark release a prerelease?
+        description: Mark release a prerelease
         type: boolean
         required: true
         default: true
