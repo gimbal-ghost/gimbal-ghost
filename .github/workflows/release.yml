@@ -30,7 +30,7 @@ jobs:
         run: echo "VERSION=$(node -pe "require('./package.json').version")" >> $GITHUB_ENV
 
       - name: Test VERSION
-        run: echo $VERSION
+        run: echo ${{ env.VERSION }}
 
       - name: Create Release Pull Request
         id: changesets
