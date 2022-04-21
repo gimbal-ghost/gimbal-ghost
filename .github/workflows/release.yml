@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       prerelease:
-        description: Mark release a prerelease
+        description: Mark as prerelease
         type: boolean
         required: true
         default: true
@@ -49,7 +49,7 @@ jobs:
           pathspec_error_handling: exitImmediately
           tag: ${{ steps.get-version.outputs.version }}
 
-      - name: Verify Commit, Push, Tag, Tag Push Success
+      - name: Exit on Commit, Push, Tag, Tag Push Failure
         if: ${{ steps.commit-version.outputs.committed != 'true' || steps.commit-version.outputs.pushed != 'true' || steps.commit-version.outputs.tagged != 'true' || steps.commit-version.outputs.tag_pushed != 'true'}}
         uses: actions/github-script@v3
         with:
@@ -57,6 +57,8 @@ jobs:
               core.setFailed('Commit failed')
 
       - name: Build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build
 
       - name: Release
