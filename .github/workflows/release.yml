@@ -69,4 +69,4 @@ jobs:
           draft: true
           name: ${{ steps.get-version.outputs.version }}
           prerelease: ${{ github.event.inputs.prerelease }}
-          tag: ${{ env.VERSION }}
+          tag: ${{ steps.get-version.outputs.version }}
