@@ -1,5 +1,11 @@
 # gimbal-ghost
 
+## 0.1.3
+
+### Patch Changes
+
+- d4d55249: fix: update tag for release step
+
 ## 0.1.2
 
 ### Patch Changes
