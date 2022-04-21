@@ -1,5 +1,11 @@
 # gimbal-ghost
 
+## 0.1.2
+
+### Patch Changes
+
+- d217da33: fix: expose github token to release buid step
+
 ## 0.1.1
 
 ### Patch Changes
