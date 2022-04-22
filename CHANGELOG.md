@@ -1,5 +1,14 @@
 # gimbal-ghost
 
+## 0.2.0
+
+### Minor Changes
+
+- a3532fa6: feat: add auto update support
+  feat: add logging to file
+  feat: add version indication in ui
+  fix: remove version from release directory and update github release action
+
 ## 0.1.3
 
 ### Patch Changes
