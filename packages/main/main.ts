@@ -3,8 +3,16 @@ import {
 } from 'electron';
 import { release } from 'os';
 import { join } from 'path';
+import log from 'electron-log';
+import { autoUpdater } from 'electron-updater';
 import { registerIPCEvents } from './ipc/ipc';
 import { Settings } from './settings';
+import pkg from '../../package.json';
+
+// Configure logging
+log.transports.file.level = 'info';
+log.info(`Gimbal Ghost starting with version v${pkg.version}`);
+autoUpdater.logger = log;
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) {
@@ -56,9 +64,11 @@ async function createWindow() {
         }
     });
 
+    const versionQueryString = `version=${pkg.version}`;
+
     // If we are in production then grab index locally
     if (app.isPackaged) {
-        window.loadFile(join(__dirname, '../renderer/index.html'));
+        window.loadFile(join(__dirname, `../renderer/index.html?${versionQueryString}`));
     }
     // Otherwise use the dev server
     else {
@@ -66,7 +76,10 @@ async function createWindow() {
         // Avoid process.env.<var> syntax which vite statically replaces
         // See: https://vitejs.dev/guide/env-and-mode.html#production-replacement
         // eslint-disable-next-line dot-notation
-        const url = `http://${process.env['VITE_DEV_SERVER_HOST']}:${process.env['VITE_DEV_SERVER_PORT']}`;
+        const host = process.env['VITE_DEV_SERVER_HOST'];
+        // eslint-disable-next-line dot-notation
+        const port = process.env['VITE_DEV_SERVER_PORT'];
+        const url = `http://${host}:${port}?${versionQueryString}`;
         window.loadURL(url);
         window.webContents.openDevTools({ mode: 'detach', activate: false });
     }
@@ -84,6 +97,7 @@ async function createWindow() {
 app.enableSandbox();
 
 app.whenReady().then(() => {
+    autoUpdater.checkForUpdatesAndNotify();
     registerIPCEvents();
     createWindow();
 });

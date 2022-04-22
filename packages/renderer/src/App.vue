@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue';
 
+const params = new URLSearchParams(document.location.search);
+const version = params.get('version');
+
 interface State {
     blackboxPaths: Set<string>,
-    message: null | string,
+    message: string | null,
+    version: string | null,
 }
 
 const state: State = reactive({
     blackboxPaths: new Set(),
     message: null,
+    version,
 });
 
 const paths = computed(() => {
@@ -43,6 +48,9 @@ async function renderLogs() {
     </ul>
     <button type="button" @click="renderLogs">Render</button>
     <p v-if="state.message">{{ state.message }}</p>
+    <p>v{{ state.version }}</p>
 </template>
 
-<style>/* @import "./assets/base.css"; */</style>
+<style>
+/* @import "./assets/base.css"; */
+</style>
