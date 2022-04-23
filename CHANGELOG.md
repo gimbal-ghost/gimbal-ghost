@@ -1,5 +1,11 @@
 # gimbal-ghost
 
+## 0.2.2
+
+### Patch Changes
+
+- 1f2a5cf8: fix: update release product name to avoid spaces which break auto update
+
 ## 0.2.1
 
 ### Patch Changes
