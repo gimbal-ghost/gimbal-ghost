@@ -1,5 +1,11 @@
 # gimbal-ghost
 
+## 0.2.1
+
+### Patch Changes
+
+- 4c431d0c: fix: app displays no ui after loaded
+
 ## 0.2.0
 
 ### Minor Changes
