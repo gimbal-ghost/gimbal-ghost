@@ -54,7 +54,7 @@
     },
     "build": {
         "appId": "com.electron.gimbal-ghost",
-        "productName": "Gimbal Ghost",
+        "productName": "GimbalGhost",
         "directories": {
             "output": "releases"
         },
