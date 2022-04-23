@@ -64,11 +64,9 @@ async function createWindow() {
         }
     });
 
-    const versionQueryString = `version=${pkg.version}`;
-
     // If we are in production then grab index locally
     if (app.isPackaged) {
-        window.loadFile(join(__dirname, `../renderer/index.html?${versionQueryString}`));
+        window.loadFile(join(__dirname, '../renderer/index.html'), { query: { version: pkg.version } });
     }
     // Otherwise use the dev server
     else {
@@ -79,6 +77,7 @@ async function createWindow() {
         const host = process.env['VITE_DEV_SERVER_HOST'];
         // eslint-disable-next-line dot-notation
         const port = process.env['VITE_DEV_SERVER_PORT'];
+        const versionQueryString = `version=${pkg.version}`;
         const url = `http://${host}:${port}?${versionQueryString}`;
         window.loadURL(url);
         window.webContents.openDevTools({ mode: 'detach', activate: false });
