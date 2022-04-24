@@ -9,6 +9,8 @@ import path from 'path';
 import { transform, Transformer } from 'stream-transform';
 import { DemuxFilePair, LogEntry, StickPositions } from './types';
 import { FrameResolver } from './FrameResolver';
+import { log } from '../logger';
+import { getAsarUnpackedPath } from '../utils';
 
 export interface BlackBoxLogOptions {
     logPath: string,
@@ -38,8 +40,10 @@ export class BlackBoxLog {
     constructor({ logPath, frameResolver, outputDirectoryPath } = {} as BlackBoxLogOptions) {
         this.frameResolver = frameResolver;
         this.tempDirectory = mkdtempSync(path.join(tmpdir(), 'gimbal-ghost-'));
-        this.blackboxDecodePath = path.resolve(__dirname, './vendor/blackbox-tools-0.4.3-windows');
-        this.ffmpegPath = path.resolve(__dirname, './vendor/ffmpeg');
+        log.debug('__dirname:', __dirname);
+        this.blackboxDecodePath = getAsarUnpackedPath(path.resolve(__dirname, './vendor/blackbox-tools-0.4.3-windows/blackbox_decode.exe'));
+        log.debug('this.blackboxDecodePath:', this.blackboxDecodePath);
+        this.ffmpegPath = getAsarUnpackedPath(path.resolve(__dirname, './vendor/ffmpeg/ffmpeg.exe'));
         this.initialLogPath = logPath;
         this.initialLogFile = path.parse(this.initialLogPath);
         this.outputDirectoryPath = outputDirectoryPath;
@@ -55,15 +59,23 @@ export class BlackBoxLog {
 
     // Decode the blackbox file into csv files in the temp directory
     decode(): Promise<void> {
-        console.log(`[${this.tempLogFile.base}] Decoding`);
+        log.info(`[${this.tempLogFile.base}] Decoding`);
 
         return new Promise((resolve, reject) => {
-            const decodeProcess = spawn('blackbox_decode.exe', [this.tempLogPath], { cwd: this.blackboxDecodePath });
+            const decodeProcess = spawn(this.blackboxDecodePath, [this.tempLogPath]);
+
+            decodeProcess.stdout.on('data', data => {
+                log.debug(`[${this.tempLogFile.base} - blackbox_decode.exe] stdout:, ${data}`);
+            });
+
+            decodeProcess.stderr.on('data', data => {
+                log.debug(`[${this.tempLogFile.base} - blackbox_decode.exe] stderr:, ${data}`);
+            });
 
             decodeProcess.on('close', code => {
                 if (code === 0) {
                     this.getDecodedCSVPaths().then(csvPaths => {
-                        console.log(`[${this.tempLogFile.base}] Decoded into:\n${csvPaths.join('\n')}`);
+                        log.info(`[${this.tempLogFile.base}] Decoded into:\n${csvPaths.join('\n')}`);
                         resolve();
                     });
                 }
@@ -100,11 +112,14 @@ export class BlackBoxLog {
         { leftDemuxFilePath, rightDemuxFilePath } = {} as DemuxFilePair,
     ): Promise<void> {
         const logName = BlackBoxLog.getLogName(leftDemuxFilePath);
-        console.log(`[${logName}] Rendering`);
+        log.info(`[${logName}] Rendering`);
 
         const outputFilePath = path.resolve(this.outputDirectoryPath, `${logName}.mov`);
         return new Promise((resolve, reject) => {
             const ffmpegArgs = [
+                '-loglevel', // Set options for logging
+                'repeat+level+info', // Repeat logs, add the log level to each, set to info
+                '-hide_banner', // Remove copyright, build, library versions
                 '-f', // Force the input file format
                 'concat', // Use concat demuxer to get left image filenames and durations
                 '-safe', // Accept all filenames from the demux file
@@ -133,16 +148,24 @@ export class BlackBoxLog {
                 outputFilePath,
             ];
 
-            const ffmpegProcess = spawn('ffmpeg.exe', ffmpegArgs, { cwd: this.ffmpegPath });
+            const ffmpegProcess = spawn(this.ffmpegPath, ffmpegArgs);
             ffmpegProcess.on('close', code => {
                 if (code === 0) {
-                    console.log(`[${logName}] Rendered to ${outputFilePath}`);
+                    log.info(`[${logName}] Rendered to ${outputFilePath}`);
                     resolve();
                 }
                 else {
                     const error = new Error(`Render process for ${logName} exited with non zero exit code: ${code}`);
                     reject(error);
                 }
+            });
+
+            ffmpegProcess.stdout.on('data', data => {
+                log.debug(`[${logName} - ffmpeg.exe] stdout: ${data}`);
+            });
+
+            ffmpegProcess.stderr.on('data', data => {
+                log.debug(`[${logName} - ffmpeg.exe] stderr: ${data}`);
             });
 
             ffmpegProcess.on('error', error => {
@@ -154,7 +177,7 @@ export class BlackBoxLog {
     private parseCSVLog(csvPath: string): Promise<void> {
         return new Promise((resolve, reject) => {
             const csvFile = path.parse(csvPath);
-            console.log(`[${csvFile.base}] Parsing`);
+            log.info(`[${csvFile.base}] Parsing`);
 
             // Confiugre output files
             const leftDemuxOutputFilename = `${csvFile.name}.left.demux.txt`;
@@ -179,7 +202,7 @@ export class BlackBoxLog {
                 .on('finish', () => {
                     leftDemuxFile.end();
                     rightDemuxFile.end();
-                    console.log(
+                    log.info(
                         `[${csvFile.base}] Parsed into:\n${leftDemuxOutputFilename}\n${rightDemuxOutputFilename}`,
                     );
                     resolve();

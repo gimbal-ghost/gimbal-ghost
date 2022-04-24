@@ -1,0 +1,10 @@
+{
+  "mode": "pre",
+  "tag": "alpha",
+  "initialVersions": {
+    "gimbal-ghost": "0.0.0"
+  },
+  "changesets": [
+    "giant-lies-deliver"
+  ]
+}

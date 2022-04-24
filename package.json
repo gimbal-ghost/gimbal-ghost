@@ -1,6 +1,6 @@
 {
     "name": "gimbal-ghost",
-    "version": "0.2.2",
+    "version": "0.0.0",
     "author": "Joshua Davidson",
     "license": "GPL-3.0-or-later",
     "private": true,
@@ -10,6 +10,7 @@
         "prebuild": "npm run lint && npm run typecheck && node scripts/build.mjs",
         "build": "electron-builder --windows",
         "version": "changeset version",
+        "generate-release-notes": "node scripts/release-notes.mjs",
         "lint": "eslint --fix .",
         "typecheck": "vue-tsc --project packages/renderer/tsconfig.json --noEmit",
         "watch": "node scripts/watch.mjs"
@@ -55,6 +56,10 @@
     "build": {
         "appId": "com.electron.gimbal-ghost",
         "productName": "GimbalGhost",
+        "asarUnpack": [
+            "**/default-gimbals/**/*.*",
+            "**/vendor/**/*.*"
+        ],
         "directories": {
             "output": "releases"
         },

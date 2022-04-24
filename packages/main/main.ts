@@ -3,15 +3,14 @@ import {
 } from 'electron';
 import { release } from 'os';
 import { join } from 'path';
-import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import { registerIPCEvents } from './ipc/ipc';
 import { Settings } from './settings';
 import pkg from '../../package.json';
+import { log } from './logger';
 
 // Configure logging
-log.transports.file.level = 'info';
-log.info(`Gimbal Ghost starting with version v${pkg.version}`);
+log.info(`${app.name} starting with version: ${pkg.version}, platform: ${process.platform}, electron: ${process.versions.electron}, chrome: ${process.versions.chrome}`);
 autoUpdater.logger = log;
 
 // Disable GPU Acceleration for Windows 7

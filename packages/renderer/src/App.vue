@@ -41,7 +41,7 @@ async function renderLogs() {
 </script>
 
 <template>
-    <button type="button" @click="getBlackboxFilePaths">Add Directory</button>
+    <button type="button" @click="getBlackboxFilePaths">Add Blackbox Files</button>
     <br />
     <ul>
         <li v-for="path in paths">{{ path }}</li>

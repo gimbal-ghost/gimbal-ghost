@@ -1,5 +1,5 @@
 // Create a bulleted list of changes with commit link at end of line
-const getReleaseLine = async (changeset, type, changelogOptions) => {
+const getReleaseLine = async changeset => {
     const lines = changeset.summary
         // Get each line
         .split('\n')
@@ -14,7 +14,7 @@ const getReleaseLine = async (changeset, type, changelogOptions) => {
     return lines.join('\n');
 };
 
-const getDependencyReleaseLine = async (changesets, dependenciesUpdated, changelogOptions) => {
+const getDependencyReleaseLine = async (changesets, dependenciesUpdated) => {
     if (dependenciesUpdated.length === 0) {
         return '';
     }

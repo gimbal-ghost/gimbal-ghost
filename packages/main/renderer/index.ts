@@ -1,6 +1,8 @@
 import path from 'path';
 import { BlackBoxLog } from './BlackBoxLog';
 import { FrameResolver } from './FrameResolver';
+import { log } from '../logger';
+import { getAsarUnpackedPath } from '../utils';
 
 export interface RenderLogsOptions {
     blackboxPaths: string[]
@@ -23,7 +25,8 @@ async function getBlackBoxLogObjects(
 export async function renderLogs({ blackboxPaths } = {} as RenderLogsOptions): Promise<boolean> {
     try {
         // Create a frame resolver with the stick manifest
-        const stickManifestFilePath = path.resolve(__dirname, './default-gimbals/gg-manifest.json');
+        // Default sticks are unpacked from asar
+        const stickManifestFilePath = getAsarUnpackedPath(path.resolve(__dirname, './default-gimbals/gg-manifest.json'));
         const frameResolver = new FrameResolver({
             stickManifestPath: stickManifestFilePath,
             fps: 30,
@@ -47,11 +50,11 @@ export async function renderLogs({ blackboxPaths } = {} as RenderLogsOptions): P
         // Dispose of all the temporary files
         const disposePromises = blackBoxLogs.map(blackBoxLog => blackBoxLog.dispose());
         await Promise.all(disposePromises);
-        console.log('Render Logs Complete!');
+        log.info('Render Logs Complete!');
         return true;
     }
     catch (error) {
-        console.log('Render Logs Error:', error);
+        log.error('Render Logs Error:', error);
         return false;
     }
 }

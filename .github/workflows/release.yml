@@ -61,11 +61,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build
 
-      - name: Release
+      - name: Generate Release Notes
+        run: npm run generate-release-notes
+
+      - name: Create Release
         uses: ncipollo/release-action@v1.10.0
         with:
           artifacts: "releases/*.exe, releases/*.exe.blockmap, releases/latest.yml"
-          bodyFile: "CHANGELOG.md"
+          bodyFile: "RELEASE-NOTES.md"
           draft: true
           name: ${{ steps.get-version.outputs.version }}
           prerelease: ${{ github.event.inputs.prerelease }}
