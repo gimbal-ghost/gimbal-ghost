@@ -4,5 +4,7 @@
   "initialVersions": {
     "gimbal-ghost": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "giant-lies-deliver"
+  ]
 }
