@@ -4,7 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       prerelease:
-        description: Mark as prerelease
+        description: Prerelease
+        type: boolean
+        required: true
+        default: true
+      draft:
+        description: Draft
         type: boolean
         required: true
         default: true
@@ -69,7 +74,7 @@ jobs:
         with:
           artifacts: "releases/*.exe, releases/*.exe.blockmap, releases/latest.yml"
           bodyFile: "RELEASE-NOTES.md"
-          draft: true
+          draft: ${{ github.event.inputs.draft }}
           name: ${{ steps.get-version.outputs.version }}
           prerelease: ${{ github.event.inputs.prerelease }}
           tag: ${{ steps.get-version.outputs.version }}
