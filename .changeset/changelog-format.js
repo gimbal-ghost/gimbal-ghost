@@ -8,7 +8,8 @@ const getReleaseLine = async changeset => {
 
     // If there is a commit then add it at the end of the line
     if (changeset.commit) {
-        return lines.join(` (${changeset.commit})\n`);
+        const linesWithCommit = lines.map(line => `${line} (${changeset.commit})`);
+        return linesWithCommit.join('\n');
     }
 
     return lines.join('\n');
