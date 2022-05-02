@@ -1,3 +1,11 @@
+# v1.1.0-beta.0 - Sunday, May 1, 2022, 11:03 PM CDT
+
+## Changes in this Release
+
+starting at version 1.0.0 should be 1.0.1 now
+committed after x with minor
+
+
 # gimbal-ghost
 
 ## 1.0.0-alpha.1
