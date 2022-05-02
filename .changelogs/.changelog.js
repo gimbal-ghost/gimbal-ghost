@@ -1,3 +1,3 @@
 module.exports = {
-    changelogOutput: '../CHANGELOGx.md',
+    changelogOutput: '../CHANGELOG.md',
 };

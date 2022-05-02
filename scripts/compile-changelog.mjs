@@ -35,15 +35,19 @@ const configDefaults = {
     currentVersion: 'package.json',
     updatePackageJSON: true,
     seedVersion: '0.0.0',
-    createReleaseEntry({ changelogs, currentVersion, releaseVersion }) {
+    createReleaseEntry({ changelogs, releaseVersion }) {
         const releaseDate = new Date().toLocaleString([], {
-            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', timeZoneName: 'short',
         });
-        let releaseEntry = `# ${releaseVersion} - ${releaseDate}\r\n`;
+
+        let releaseEntry = `# v${releaseVersion} - ${releaseDate}\n\n## Changes in this Release\n\n`;
+
         changelogs.forEach(changelog => {
-            releaseEntry += `${changelog.content}\r\n`;
+            releaseEntry += `${changelog.content}\n`;
         });
+
         releaseEntry = releaseEntry.trim();
+
         return releaseEntry;
     },
 };
@@ -62,23 +66,23 @@ if (fs.existsSync(masterChangelogPath)) {
 // Get the current version if passed then use it, if omittted then use the seed
 let currentVersion;
 if (versionOnlyRegEx.test(config.currentVersion)) {
-    console.log('Setting current version from config.currentVersion');
+    console.log('Getting current version from config.currentVersion');
     currentVersion = config.currentVersion;
 }
 // Get the version from the package.json file
 else if (config.currentVersion === 'package.json') {
-    console.log('Setting current version from package.json');
+    console.log('Getting current version from package.json');
     currentVersion = pkg.version;
 }
 // Retrieve the current version from the last changelog entry if it has one
 else if (config.currentVersion === 'changelog' && masterChangelogContent.match(versionRegEx)) {
-    console.log('Setting current version from changelog');
+    console.log('Getting current version from changelog');
     const versionMatches = masterChangelogContent.match(versionRegEx);
     [currentVersion] = versionMatches;
 }
 // Don't know where to get version so start at seedVersion
 else {
-    console.log('Setting current version from config.seedVersion');
+    console.log('Getting current version from config.seedVersion');
     currentVersion = config.seedVersion;
 }
 
@@ -86,6 +90,8 @@ else {
 const currentVersionData = semver.parse(currentVersion);
 const currentVersionIsPrerelease = currentVersionData?.prerelease.length;
 const leavingPrerelease = !isPrerelease && currentVersionIsPrerelease;
+console.log('currentVersionIsPrerelease', currentVersionIsPrerelease);
+console.log('leavingPrerelease', leavingPrerelease);
 
 console.log(`Current version is ${currentVersion}`);
 
@@ -149,6 +155,11 @@ const changelogPromises = fs.readdirSync(changelogsDirectory)
 // Remove all changelogs that are uncommitted (i.e. null)
 const changelogs = await (await Promise.all(changelogPromises)).filter(changelog => changelog !== null);
 
+if (changelogs.length === 0) {
+    console.error(`No committed changelogs found in ${changelogsDirectory}`);
+    process.exit(1);
+}
+
 // Sort the changelogs from oldest to newest
 const sortedChangelogs = changelogs.sort((a, b) => a.commitDate - b.commitDate);
 
@@ -165,7 +176,7 @@ let releaseVersion;
 if (isPrerelease && prereleaseId) {
     // Current version is an exisiting prerelease and should be evaluated for major, minor, patch bump
     if (semver.gt(nextRawVersion, currentRawVersion) || !currentVersionIsPrerelease) {
-        releaseVersion = semver.inc(currentVersion, `pre${prevailingVersionBump}`);
+        releaseVersion = semver.inc(currentVersion, `pre${prevailingVersionBump}`, prereleaseId);
     }
     // Leave raw version alone and just increment the prerelease version
     else {
@@ -185,17 +196,17 @@ else if (leavingPrerelease) {
 }
 // Normal release
 else {
-    semver.inc(currentVersion, prevailingVersionBump);
+    releaseVersion = semver.inc(currentVersion, prevailingVersionBump);
 }
 
 const releaseEntry = config.createReleaseEntry({ changelogs, currentVersion, releaseVersion });
 
-masterChangelogContent = `${releaseEntry}\r\n\r\n${masterChangelogContent}`;
+masterChangelogContent = `${releaseEntry}\n\n\n${masterChangelogContent}`;
 
 // Update the version in package.json if requested
 if (config.updatePackageJSON) {
     pkg.version = releaseVersion;
-    fs.writeFileSync('../package.json', JSON.stringify(pkg));
+    fs.writeFileSync(path.join(__dirname, '..', 'package.json'), JSON.stringify(pkg, null, 4));
 }
 
 // Write the master changelog
