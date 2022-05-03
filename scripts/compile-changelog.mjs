@@ -90,8 +90,6 @@ else {
 const currentVersionData = semver.parse(currentVersion);
 const currentVersionIsPrerelease = currentVersionData?.prerelease.length;
 const leavingPrerelease = !isPrerelease && currentVersionIsPrerelease;
-console.log('currentVersionIsPrerelease', currentVersionIsPrerelease);
-console.log('leavingPrerelease', leavingPrerelease);
 
 console.log(`Current version is ${currentVersion}`);
 
@@ -110,7 +108,6 @@ const changelogPromises = fs.readdirSync(changelogsDirectory)
     })
     // Extract the metadata
     .map(fileName => {
-        console.log('Evaluating changelog:', fileName);
         const filePath = path.resolve(changelogsDirectory, fileName);
 
         // use git log to find the commit date
@@ -143,7 +140,6 @@ const changelogPromises = fs.readdirSync(changelogsDirectory)
                         versionBump,
                         content,
                     };
-                    console.log('changelogMetaData', changelogMetaData);
                     return changelogMetaData;
                 }
                 // Changelog file indicates an uncommitted change
@@ -187,7 +183,7 @@ if (isPrerelease && prereleaseId) {
 else if (leavingPrerelease) {
     // Latest changelog pushes the raw version then use it
     if (semver.gt(nextRawVersion, currentRawVersion)) {
-        semver.inc(currentVersion, prevailingVersionBump);
+        releaseVersion = semver.inc(currentVersion, prevailingVersionBump);
     }
     // Latest changelog doesn't modify raw version then drop the prerelease
     else {
