@@ -34,3 +34,4 @@ The process of creating a 3D video of transmitter sticks from blackbox data is c
 Licensed under GPLv3.
 
 Blackbox files decoded using [Betaflight Blackbox Tools](https://github.com/betaflight/blackbox-tools).
+3D Gimbal model from [BlackboxSticksExporter3D](https://github.com/bsondermann/BlackboxSticksExporter3D).
