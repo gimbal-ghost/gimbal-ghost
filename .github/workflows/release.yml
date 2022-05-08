@@ -3,11 +3,16 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      prerelease:
-        description: Prerelease
-        type: boolean
+      releaseType:
+        description: Release Type
+        type: choice
         required: true
-        default: true
+        default: 'official',
+        options:
+        - official
+        - alpha
+        - beta
+        - rc
       draft:
         description: Draft
         type: boolean
@@ -36,15 +41,17 @@ jobs:
       - name: NPM Install
         run: npm install
 
-      - name: Update Version Based on Changesets
+      - name: Update Official Version
+        if: ${{ github.events.inputs.releaseType == 'official' }}
         run: npm run version
+
+      - name: Update Prerelease Version
+        if: ${{ github.events.inputs.releaseType != 'official' }}
+        run: npm run version -- --prerelease ${{ github.events.inputs.releaseType }}
 
       - name: Get Version
         id: get-version
         run: echo "::set-output name=version::$(node --print "'v'.concat(require('./package.json').version)")"
-
-      - name: Print Version
-        run: echo ${{ steps.get-version.outputs.version }}
 
       - name: Commit Version
         id: commit-version
@@ -66,9 +73,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build
 
-      - name: Generate Release Notes
-        run: npm run generate-release-notes
-
       - name: Create Release
         uses: ncipollo/release-action@v1.10.0
         with:
@@ -76,5 +80,5 @@ jobs:
           bodyFile: "RELEASE-NOTES.md"
           draft: ${{ github.event.inputs.draft }}
           name: ${{ steps.get-version.outputs.version }}
-          prerelease: ${{ github.event.inputs.prerelease }}
+          prerelease: ${{ github.events.inputs.releaseType != 'official' }}
           tag: ${{ steps.get-version.outputs.version }}
