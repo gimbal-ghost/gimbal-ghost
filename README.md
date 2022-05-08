@@ -1,10 +1,18 @@
 # 👻 Gimbal Ghost
-Generate a 3d video of your transmitter gimbal sticks from blackbox flight data.
+Gimbal Ghost is a desktop app allowing you to quickly create high quality 3D video of your gimbal sticks from your Betaflight blackbox logs. Think stick cam, but with a ghost moving the gimbals. 😜
 
-Say goodbye to the stick cam that takes up real estate in your video. It's like a ghost is moving your transmitter gimbals for you.
+## Motivation
+I have learned the most from FPV flight videos where I can clearly see the pilot's gimbals and could then go out and try what they did in the field. The current standard of using a "Stick Cam" comes with the overhead of an extra camera, extra time in post processing and frankly an imperfect view of the gimbals--quite a barrier to entry. Wouldn't it be great if we could all easily show our stick movements in our videos?
+
+In creating Gimbal Ghost I wanted to make posting a video with a view of your gimbal sticks the norm rather than the exception. This can only be accomplished if doing so is easy, fast, and high quality. This is my best stab at that. I welcome any feedback you may have and any contributions if you're willing. 
+
+Go out and fly! And if you do post video for others, add Gimbal Ghost to it so we all can learn from you!
+
+## Special Thanks
+I owe a special thanks to Bastian Sondermann and the 3D models in his [BlackboxSticksExporter3D](https://github.com/bsondermann/BlackboxSticksExporter3D) tool. The 3D models in Gimbal Ghost are created from the 3D models from Bastian. I used his tool for quite some time in my search for an answer to this problem until Windows 11 rendered it inoperable. In many ways his tool was the inspiration for this one.
 
 ## 🏗️ Architecture
-The process of creating a 3d video of transmitter sticks from blackbox data is comprised of 3 steps:
+The process of creating a 3D video of transmitter sticks from blackbox data is comprised of three high levels steps:
 
 1. Decode:
     * Blackbox files are decoded into CSV files using the betaflight blackbox_decode CLI tool.
