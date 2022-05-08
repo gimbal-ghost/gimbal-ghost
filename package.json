@@ -1,6 +1,6 @@
 {
     "name": "gimbal-ghost",
-    "version": "1.1.0-beta.0",
+    "version": "1.0.0-alpha.1",
     "author": "Joshua Davidson",
     "license": "GPL-3.0-or-later",
     "private": true,
@@ -9,8 +9,7 @@
     "scripts": {
         "prebuild": "npm run lint && npm run typecheck && node scripts/build.mjs",
         "build": "electron-builder --windows",
-        "version": "changeset version",
-        "generate-release-notes": "node scripts/release-notes.mjs",
+        "version": "node scripts/compile-changelog.mjs",
         "lint": "eslint --fix .",
         "typecheck": "vue-tsc --project packages/renderer/tsconfig.json --noEmit",
         "watch": "node scripts/watch.mjs"
@@ -28,7 +27,6 @@
         "npm": ">=8.3.1"
     },
     "devDependencies": {
-        "@changesets/cli": "^2.22.0",
         "@types/node": "^17.0.25",
         "@typescript-eslint/eslint-plugin": "^5.20.0",
         "@typescript-eslint/parser": "^5.20.0",
@@ -57,6 +55,9 @@
         "electron-updater": "^5.0.1",
         "rollup-plugin-copy": "^3.4.0",
         "stream-transform": "^3.0.4"
+    },
+    "changelog": {
+        "prereleaseInitialVersion": "1.0.0"
     },
     "build": {
         "appId": "com.electron.gimbal-ghost",

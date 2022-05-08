@@ -33,7 +33,6 @@ if (isPrerelease && !prereleaseId) {
 const configDefaults = {
     changelogOutput: '../CHANGELOG.md',
     currentVersion: 'package.json',
-    updatePackageJSON: true,
     seedVersion: '0.0.0',
     createReleaseEntry({ changelogs, releaseVersion }) {
         const releaseDate = new Date().toLocaleString([], {
@@ -90,6 +89,7 @@ else {
 const currentVersionData = semver.parse(currentVersion);
 const currentVersionIsPrerelease = currentVersionData?.prerelease.length;
 const leavingPrerelease = !isPrerelease && currentVersionIsPrerelease;
+const enteringPrerelease = isPrerelease && !currentVersionIsPrerelease;
 
 console.log(`Current version is ${currentVersion}`);
 
@@ -102,7 +102,7 @@ const changelogPromises = fs.readdirSync(changelogsDirectory)
     // Only grab changelog files both normal and previous prerelease ones
     .filter(fileName => {
         if (leavingPrerelease) {
-            return fileName.endsWith('.md') && (fileName.startsWith('changelog.') || fileName.startsWith('prerelease.changelog'));
+            return fileName.endsWith('.md') && (fileName.startsWith('changelog.') || fileName.startsWith('pre.changelog'));
         }
         return fileName.endsWith('.md') && fileName.startsWith('changelog.');
     })
@@ -130,6 +130,7 @@ const changelogPromises = fs.readdirSync(changelogsDirectory)
                     const changelogMetaData = {
                         filePath,
                         fileName,
+                        commit: firstCommit,
                         commitHash: firstCommit.hash,
                         commitDate: new Date(firstCommit.date),
                         commitMessage: firstCommit.message,
@@ -164,15 +165,16 @@ const versionBumps = sortedChangelogs.map(changelog => changelog.versionBump).so
 // First in the list becomes the prevailing version bump
 const prevailingVersionBump = versionBumps[0];
 
-const currentRawVersion = currentVersionData.raw;
-const nextRawVersion = semver.inc(currentVersionData.raw, prevailingVersionBump);
+const currentMajorMinorPatch = `${currentVersionData.major}.${currentVersionData.minor}.${currentVersionData.patch}`;
 
 let releaseVersion;
 // Prerelease version
 if (isPrerelease && prereleaseId) {
     // Current version is an exisiting prerelease and should be evaluated for major, minor, patch bump
-    if (semver.gt(nextRawVersion, currentRawVersion) || !currentVersionIsPrerelease) {
-        releaseVersion = semver.inc(currentVersion, `pre${prevailingVersionBump}`, prereleaseId);
+    const initialVersion = pkg.changelog.prereleaseInitialVersion;
+    const changelogBumpVersion = semver.inc(initialVersion, prevailingVersionBump);
+    if (semver.gt(changelogBumpVersion, currentMajorMinorPatch) || !currentVersionIsPrerelease) {
+        releaseVersion = semver.inc(initialVersion, `pre${prevailingVersionBump}`, prereleaseId);
     }
     // Leave raw version alone and just increment the prerelease version
     else {
@@ -182,28 +184,35 @@ if (isPrerelease && prereleaseId) {
 // Leaving pre-release state
 else if (leavingPrerelease) {
     // Latest changelog pushes the raw version then use it
-    if (semver.gt(nextRawVersion, currentRawVersion)) {
-        releaseVersion = semver.inc(currentVersion, prevailingVersionBump);
-    }
-    // Latest changelog doesn't modify raw version then drop the prerelease
-    else {
-        releaseVersion = currentRawVersion;
-    }
+    const changelogBumpVersion = semver.inc(pkg.changelog.prereleaseInitialVersion, prevailingVersionBump);
+    releaseVersion = semver.gt(changelogBumpVersion, currentMajorMinorPatch) ? changelogBumpVersion : currentMajorMinorPatch;
 }
 // Normal release
 else {
     releaseVersion = semver.inc(currentVersion, prevailingVersionBump);
 }
 
-const releaseEntry = config.createReleaseEntry({ changelogs, currentVersion, releaseVersion });
+// Update the version in package.json
+pkg.version = releaseVersion;
+// If we are entering prerelease then save the initial version
+if (enteringPrerelease) {
+    if (!pkg.changelog) {
+        pkg.changelog = {};
+    }
+    pkg.changelog.prereleaseInitialVersion = currentVersion;
+}
+// Save the updated package.json
+fs.writeFileSync(path.join(__dirname, '..', 'package.json'), JSON.stringify(pkg, null, 4));
+
+const releaseEntry = config.createReleaseEntry({
+    changelogs,
+    currentVersion,
+    releaseVersion,
+    leavingPrerelease,
+    enteringPrerelease,
+});
 
 masterChangelogContent = `${releaseEntry}\n\n\n${masterChangelogContent}`;
-
-// Update the version in package.json if requested
-if (config.updatePackageJSON) {
-    pkg.version = releaseVersion;
-    fs.writeFileSync(path.join(__dirname, '..', 'package.json'), JSON.stringify(pkg, null, 4));
-}
 
 // Write the master changelog
 fs.writeFileSync(masterChangelogPath, masterChangelogContent);
@@ -213,7 +222,7 @@ if (isPrerelease) {
     // Rename the prerelease files to prerelease.changelog.xxx.md indicating prerelease
     const renamePromises = changelogs.map(changelog => {
         const changelogPathInfo = path.parse(changelog.filePath);
-        const newFileName = changelogPathInfo.base.replace('changelog', 'prerelease.changelog');
+        const newFileName = changelogPathInfo.base.replace('changelog', 'pre.changelog');
         const renamedFilePath = path.resolve(changelogPathInfo.dir, newFileName);
         return fsPromises.rename(changelog.filePath, renamedFilePath);
     });
@@ -225,4 +234,4 @@ else {
     await Promise.all(deletePromises);
 }
 
-console.log(`Changelog updated with version ${releaseVersion} release notes`);
+console.log(`Version updated to ${releaseVersion}`);
