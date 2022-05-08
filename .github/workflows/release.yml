@@ -9,10 +9,10 @@ on:
         required: true
         default: 'official',
         options:
-        - official
-        - alpha
-        - beta
-        - rc
+          - official
+          - alpha
+          - beta
+          - rc
       draft:
         description: Draft
         type: boolean
