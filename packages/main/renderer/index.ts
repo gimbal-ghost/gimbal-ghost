@@ -1,18 +1,18 @@
 import path from 'path';
-import { BlackBoxLog } from './BlackBoxLog';
+import { BlackboxLog } from './BlackboxLog';
 import { FrameResolver } from './FrameResolver';
 import { log } from '../logger';
 import { getAsarUnpackedPath } from '../utils';
 
 export interface RenderLogsOptions {
-    blackboxPaths: string[]
+    blackboxLogPaths: string[]
 }
 
-async function getBlackBoxLogObjects(
+async function getBlackboxLogObjects(
     blackboxPaths: string[],
     frameResolver: FrameResolver,
-): Promise<BlackBoxLog[]> {
-    const blackboxLogs = blackboxPaths.map(blackboxPath => new BlackBoxLog({
+): Promise<BlackboxLog[]> {
+    const blackboxLogs = blackboxPaths.map(blackboxPath => new BlackboxLog({
         logPath: blackboxPath,
         frameResolver,
         outputDirectoryPath: path.dirname(blackboxPath),
@@ -22,7 +22,7 @@ async function getBlackBoxLogObjects(
 }
 
 // TODO: Implement error handling
-export async function renderLogs({ blackboxPaths } = {} as RenderLogsOptions): Promise<boolean> {
+export async function renderLogs({ blackboxLogPaths } = {} as RenderLogsOptions): Promise<boolean> {
     try {
         // Create a frame resolver with the stick manifest
         // Default sticks are unpacked from asar
@@ -33,7 +33,7 @@ export async function renderLogs({ blackboxPaths } = {} as RenderLogsOptions): P
         });
 
         // Create the .csv file of blackbox data
-        const blackBoxLogs = await getBlackBoxLogObjects(blackboxPaths, frameResolver);
+        const blackBoxLogs = await getBlackboxLogObjects(blackboxLogPaths, frameResolver);
 
         // Decode all of the blackbox logs
         const decodePromises = blackBoxLogs.map(blackBoxLog => blackBoxLog.decode());

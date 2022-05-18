@@ -20,7 +20,7 @@ async function render(event: any, options: RenderLogsOptions): Promise<boolean> 
     return renderLogs(options);
 }
 
-export function registerIPCEvents(): void {
+export function registerMainIPCHandlers(): void {
     ipcMain.handle('getBlackboxFilePaths', getBlackboxFilePaths);
     ipcMain.handle('render', render);
 }

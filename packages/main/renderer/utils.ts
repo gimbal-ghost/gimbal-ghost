@@ -25,7 +25,7 @@ export function nearest(
     rangeMax: number,
     increment: number,
 ): number {
-    let nearestValue: number = 0;
+    let nearestValue = 0;
     for (
         let currentRangeValue = rangeMin;
         currentRangeValue <= rangeMax;

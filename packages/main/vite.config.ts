@@ -32,6 +32,7 @@ export default defineConfig({
                 { src: 'packages/main/vendor', dest: 'dist/main' },
                 { src: 'packages/main/default-gimbals', dest: 'dist/main' },
             ],
+            copyOnce: true,
             hook: 'writeBundle',
         }),
     ],
