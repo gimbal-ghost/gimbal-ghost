@@ -78,6 +78,7 @@ export class BlackboxLog {
                         log.info(`[${this.tempLogFile.base}] Decoded into:\n${csvPaths.join('\n')}`);
                         this.blackboxFlights = csvPaths.map(csvPath => new BlackboxFlight({
                             csvPath,
+                            blackboxLogPath: this.initialLogPath,
                             frameResolver: this.frameResolver,
                             outputDirectoryPath: this.outputDirectoryPath,
                         }));

@@ -7,9 +7,30 @@ import { log } from '../logger';
 import { DemuxFilePair, LogEntry, StickPositions } from './types';
 import { FrameResolver } from './FrameResolver';
 import { getAsarUnpackedPath } from '../utils';
+import { Event, EventNames } from '../event-bus/types';
+import { EventBus } from '../event-bus/EventBus';
+
+export enum BlackboxFlightStatus {
+    Decoded = 'decoded',
+    Parsing = 'parsing',
+    Parsed = 'parsed',
+    Rendering = 'rendering',
+    Complete = 'complete',
+    Error = 'error',
+}
+
+export interface BlackboxFlightEvent extends Event {
+    status: BlackboxFlightStatus,
+    logPath: string,
+    outputFileName: string,
+    flightNumber: number,
+    message: null | string,
+    progress: null | number,
+}
 
 export interface BlackboxFlightOptions {
     csvPath: string,
+    blackboxLogPath: string,
     frameResolver: FrameResolver,
     outputDirectoryPath: string,
 }
@@ -21,9 +42,17 @@ export class BlackboxFlight {
 
     private blackboxLogName: string | undefined;
 
+    private blackboxLogPath: string;
+
     private flightNumber: number;
 
+    private totalFrames: number = 0;
+
+    private currentRenderFrame: number = 0;
+
     private frameResolver: FrameResolver;
+
+    private outputFileName: string;
 
     private outputFilePath: string;
 
@@ -31,8 +60,11 @@ export class BlackboxFlight {
 
     private ffmpegPath: string;
 
-    constructor({ csvPath, frameResolver, outputDirectoryPath } = {} as BlackboxFlightOptions) {
+    constructor({
+        csvPath, blackboxLogPath, frameResolver, outputDirectoryPath,
+    } = {} as BlackboxFlightOptions) {
         this.csvPath = csvPath;
+        this.blackboxLogPath = blackboxLogPath;
         this.csvPathInfo = path.parse(this.csvPath);
 
         const csvPathRegEx = /^(?<blackboxLogName>.+(?=\.\d{2}))\.(?<flightNumber>\d{2})/g;
@@ -42,7 +74,8 @@ export class BlackboxFlight {
         this.flightNumber = parseInt(matchGroups?.flightNumber || '00', 10);
 
         this.frameResolver = frameResolver;
-        this.outputFilePath = path.resolve(outputDirectoryPath, `${this.blackboxLogName} flight ${this.flightNumber}.mov`);
+        this.outputFileName = `${this.blackboxLogName} flight ${this.flightNumber}.mov`;
+        this.outputFilePath = path.resolve(outputDirectoryPath, this.outputFileName);
 
         const leftDemuxOutputFilename = `${this.csvPathInfo.name}.left.demux.txt`;
         const rightDemuxOutputFilename = `${this.csvPathInfo.name}.right.demux.txt`;
@@ -52,9 +85,12 @@ export class BlackboxFlight {
         };
 
         this.ffmpegPath = getAsarUnpackedPath(path.resolve(__dirname, './vendor/ffmpeg/ffmpeg.exe'));
+
+        this.emitStatusEvent(BlackboxFlightStatus.Decoded);
     }
 
     parse(): Promise<void> {
+        this.emitStatusEvent(BlackboxFlightStatus.Parsing);
         return new Promise((resolve, reject) => {
             // Confiugre output files
             const leftDemuxFile = createWriteStream(this.demuxFilePair.leftDemuxFilePath);
@@ -76,15 +112,18 @@ export class BlackboxFlight {
                     log.info(
                         `[${this.csvPathInfo.base}] Parsed into:\n${this.demuxFilePair.leftDemuxFilePath}\n${this.demuxFilePair.rightDemuxFilePath}`,
                     );
+                    this.emitStatusEvent(BlackboxFlightStatus.Parsed);
                     resolve();
                 })
                 .on('error', error => {
+                    this.emitStatusEvent(BlackboxFlightStatus.Error, { message: error.message });
                     reject(error);
                 });
         });
     }
 
     render(): Promise<void> {
+        this.emitStatusEvent(BlackboxFlightStatus.Rendering);
         return new Promise((resolve, reject) => {
             const ffmpegArgs = [
                 '-loglevel', // Set options for logging
@@ -122,10 +161,12 @@ export class BlackboxFlight {
             ffmpegProcess.on('close', code => {
                 if (code === 0) {
                     log.info(`[${this.csvPathInfo.name}] Rendered to ${this.outputFilePath}`);
+                    this.emitStatusEvent(BlackboxFlightStatus.Complete, { progress: 100 });
                     resolve();
                 }
                 else {
                     const error = new Error(`Render process for ${this.csvPathInfo.name} exited with non zero exit code: ${code}`);
+                    this.emitStatusEvent(BlackboxFlightStatus.Error, { message: error.message });
                     reject(error);
                 }
             });
@@ -134,11 +175,14 @@ export class BlackboxFlight {
                 log.debug(`[${this.csvPathInfo.name} - ffmpeg.exe] stdout: ${data}`);
             });
 
-            ffmpegProcess.stderr.on('data', data => {
+            ffmpegProcess.stderr.on('data', (data: Buffer) => {
+                this.setCurrentFrame(data.toString());
+                this.emitStatusEvent(BlackboxFlightStatus.Rendering);
                 log.debug(`[${this.csvPathInfo.name} - ffmpeg.exe] stderr: ${data}`);
             });
 
             ffmpegProcess.on('error', error => {
+                this.emitStatusEvent(BlackboxFlightStatus.Error, { message: error.message });
                 reject(error);
             });
         });
@@ -191,11 +235,43 @@ export class BlackboxFlight {
 
                 // Advance variables for next iteration
                 frame += 1;
+                this.totalFrames += 1;
                 previousLog = currentLog;
             }
             // Move on to the next log entry without piping data through
             return next();
         });
+    }
+
+    get renderPercentage(): number {
+        if (this.totalFrames) {
+            const renderPercentage = (this.currentRenderFrame / this.totalFrames) * 100;
+            // Don't allow percentage to go above 100%
+            return Math.min(renderPercentage, 100);
+        }
+        return 0;
+    }
+
+    private emitStatusEvent(status: BlackboxFlightStatus, { message = null, progress = this.renderPercentage } = {} as {message?: null | string, progress?: null | number}): void {
+        const blackboxFlightEvent = {
+            status,
+            logPath: this.blackboxLogPath,
+            outputFileName: this.outputFileName,
+            flightNumber: this.flightNumber,
+            message,
+            progress,
+        } as BlackboxFlightEvent;
+
+        EventBus.emit(EventNames.BlackboxFlightUpdate, blackboxFlightEvent);
+    }
+
+    private setCurrentFrame(ffmpegOutput: string): void {
+        const frameRegEx = /frame=\D*(?<frame>\d+)/gm;
+        const regExMatch = frameRegEx.exec(ffmpegOutput);
+        const currentFrame = regExMatch?.groups?.frame;
+        if (currentFrame) {
+            this.currentRenderFrame = parseInt(currentFrame, 10);
+        }
     }
 
     static convertLogDataToLogEntry(logData: any): LogEntry {

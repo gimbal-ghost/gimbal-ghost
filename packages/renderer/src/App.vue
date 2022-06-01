@@ -1,57 +1,54 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue';
-import Electron from 'electron'
+import Electron from 'electron';
 import { Event, EventNames } from '../../main/event-bus/types';
+import { BlackboxFlightEvent } from '../../main/renderer/BlackboxFlight';
+import { ApplicationState } from './types';
+import BlackboxList from './components/BlackboxFileList.vue';
 
 const params = new URLSearchParams(document.location.search);
 const version = params.get('version');
 
-interface State {
-    blackboxFiles: Array<BlackboxInfo>,
-    message: string | null,
-    version: string | null,
-    isRendering: boolean,
-}
-
-interface BlackboxInfo {
-    path: string,
-}
-
-const state: State = reactive({
+const state: ApplicationState = reactive({
     blackboxFiles: [],
     message: '',
     version,
     isRendering: false,
+    dragPresent: false,
 });
 
-const paths = computed(() => {
-    return state.blackboxFiles.map(blackboxFile => blackboxFile.path);
-});
+const logPaths = computed(() => state.blackboxFiles.map(blackboxFile => blackboxFile.logPath));
 
-const hasBlackboxFiles = computed(() => {
-    return state.blackboxFiles.length !== 0;
-});
+const hasBlackboxFiles = computed(() => state.blackboxFiles.length !== 0);
+
+function addBlackboxFile(logPath: string) {
+    // Make sure we don't put the same file in twice
+    if (!state.blackboxFiles.find(blackboxFile => blackboxFile.logPath === logPath)) {
+        state.blackboxFiles.push({
+            logPath,
+            flightEvents: new Map(),
+        });
+    }
+}
 
 async function getBlackboxFilePaths() {
     state.message = null;
     const blackboxPaths: string[] | null = await window.electron.getBlackboxFilePaths();
     if (blackboxPaths) {
-        blackboxPaths.forEach(path => state.blackboxFiles.push({
-            path,
-        }));
+        blackboxPaths.forEach(addBlackboxFile);
     }
     state.message = '';
 }
 
 function removeFile(path: string) {
-    state.blackboxFiles = state.blackboxFiles.filter(blackboxFile => blackboxFile.path !== path);
+    state.blackboxFiles = state.blackboxFiles.filter(blackboxFile => blackboxFile.logPath !== path);
     state.message = '';
 }
 
 async function renderLogs() {
     state.isRendering = true;
     state.message = 'Rendering...';
-    const renderSuccessful = await window.electron.render({ blackboxLogPaths: paths.value });
+    const renderSuccessful = await window.electron.render({ blackboxLogPaths: logPaths.value });
     if (renderSuccessful) {
         state.message = 'Render Complete';
     }
@@ -61,11 +58,45 @@ async function renderLogs() {
     state.isRendering = false;
 }
 
+function openDirectory(logPath: string) {
+    window.electron.openDirectory(logPath);
+}
+
+function openChangelog() {
+    window.electron.openChangelog();
+}
+
+function dragenter() {
+    state.dragPresent = true;
+}
+
+function dragleave() {
+    state.dragPresent = false;
+}
+
+function drop(event: DragEvent) {
+    state.dragPresent = false;
+
+    const files = event.dataTransfer?.files;
+    if (files) {
+        for (let index = 0; index < files.length; index += 1) {
+            const file = files?.item(index);
+            // Ensure that only bbl files are allowed
+            if (file && file.path && file.path.endsWith('.bbl')) {
+                addBlackboxFile(file.path);
+            }
+        }
+    }
+}
+
 window.electron.onEvent((ipcRendererEvent: Electron.IpcRendererEvent, event: Event) => {
     switch (event.name) {
-        case EventNames.Every:
-            console.log('event', event);
+        case EventNames.BlackboxFlightUpdate: {
+            const flightEvent = event as BlackboxFlightEvent;
+            const updatedBlackboxFile = state.blackboxFiles.find(blackboxFile => blackboxFile.logPath === flightEvent.logPath);
+            updatedBlackboxFile?.flightEvents.set(flightEvent.flightNumber, flightEvent);
             break;
+        }
 
         default:
             break;
@@ -75,38 +106,76 @@ window.electron.onEvent((ipcRendererEvent: Electron.IpcRendererEvent, event: Eve
 </script>
 
 <template>
-    <div class="flex flex-col items-center p-4 h-screen gap-4 text-neutral-100 bg-neutral-800 font-medium">
-        <div class="grow w-full backdrop-brightness-50 flex-col">
-            <div class="px-2 py-1 flex" v-if="paths.length" v-for="path in paths" :key="path">
-                <div class="grow">
-                    {{ path }}
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hover:text-red-600 outline-neutral-100"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" @click="removeFile(path)"
-                    @keydown.enter="removeFile(path)" @keydown.space="removeFile(path)" role="button" tabindex="0">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </div>
-            <div class="px-2 py-1" v-else>
-                No files
-            </div>
-        </div>
+    <div class="flex flex-col items-center p-4 h-screen gap-4 text-neutral-100 bg-neutral-800">
+        <BlackboxList
+            class="border-dashed border-2"
+            :class="{'border-neutral-100': state.dragPresent, 'border-transparent': !state.dragPresent}"
+            draggable
+            :blackbox-files="state.blackboxFiles"
+            @remove-file="removeFile"
+            @open-directory="openDirectory"
+            @dragenter.prevent="dragenter"
+            @dragover.prevent=""
+            @dragleave="dragleave"
+            @drop="drop"
+        />
 
         <button
-            class="font-medium bg-neutral-100 text-neutral-800 active:bg-neutral-800 active:text-neutral-100 rounded-full hover:outline outline-neutral-100 outline-offset-4 p-2 disabled:cursor-not-allowed disabled:opacity-50"
-            type="button" @click="getBlackboxFilePaths" :disabled="state.isRendering">
-            Add Blackbox Files
+            class="font-medium
+            bg-neutral-100
+            text-neutral-800
+            active:bg-neutral-800
+            active:text-neutral-100
+            outline-neutral-100
+            rounded-full
+            hover:outline
+            outline-offset-4
+            p-2
+            disabled:cursor-not-allowed
+            disabled:opacity-50
+            "
+            type="button"
+            :disabled="state.isRendering"
+            @click="getBlackboxFilePaths"
+        >
+            Select Blackbox Files
         </button>
 
         <button
-            class="font-medium bg-neutral-100 text-neutral-800 active:bg-neutral-800 active:text-neutral-100 rounded-full hover:outline outline-neutral-100 outline-offset-4 p-2 disabled:cursor-not-allowed disabled:opacity-50"
-            type="button" @click="renderLogs" :disabled="!hasBlackboxFiles || state.isRendering">
+            class="font-medium
+            bg-green-600
+            text-neutral-800
+            active:bg-neutral-800
+            active:text-neutral-100
+            outline-green-600
+            rounded-full
+            hover:outline
+            outline-offset-4
+            p-2
+            disabled:cursor-not-allowed
+            disabled:opacity-50
+            "
+            type="button"
+            :disabled="!hasBlackboxFiles || state.isRendering"
+            @click="renderLogs"
+        >
             Render
         </button>
 
-        <div class="h-6" :class="{ 'animate-pulse': state.isRendering }">{{ state.message }}</div>
+        <div
+            class="h-6"
+            :class="{ 'animate-pulse': state.isRendering }"
+        >
+            {{ state.message }}
+        </div>
 
-        <p class="text-xs font-thin">v{{ state.version }}</p>
+        <a
+            href=""
+            class="text-xs font-thin underline hover:text-neutral-400"
+            @click.prevent="openChangelog"
+        >
+            v{{ state.version }}
+        </a>
     </div>
 </template>
 

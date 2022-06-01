@@ -17,7 +17,7 @@ function createReleaseEntry({ changelogs, releaseVersion }) {
         const lineRegEx = /\[(?<category>[A-Z]+)\]\s*(?<content>[\w|\W]*)/;
         const changes = lines.map(line => {
             const lineMatches = line.match(lineRegEx);
-            const category = lineMatches ? lineMatches.groups.category : 'OTHER';
+            const category = lineMatches ? lineMatches.groups.category.toUpperCase() : 'OTHER';
             const content = lineMatches ? lineMatches.groups.content : '';
 
             // Each change has meta data about changelog where it came from, category, and content

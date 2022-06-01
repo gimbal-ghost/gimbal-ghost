@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 module.exports = {
     content: [
         './packages/renderer/index.html',
@@ -6,5 +7,8 @@ module.exports = {
     theme: {
         extend: {},
     },
-    plugins: [],
+    plugins: [
+        require('tailwind-scrollbar'),
+        require('@tailwindcss/line-clamp'),
+    ],
 };
