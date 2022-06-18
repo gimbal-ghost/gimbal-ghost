@@ -21,9 +21,6 @@ jobs:
       - name: NPM Install
         run: npm install
 
-      - name: Lint
-        run: npx 
-
       - name: Lint, Typecheck, & Build (npm run build)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
