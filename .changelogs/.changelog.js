@@ -6,7 +6,7 @@ function createReleaseEntry({ changelogs, releaseVersion }) {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', timeZoneName: 'short',
     });
 
-    let releaseEntry = `# v${releaseVersion} - ${releaseDate}\n\n## Changes in this Release\n\n`;
+    let releaseEntry = `### Changes in this Release\n\n`;
 
     // Get a list of all indiviudal changes (i.e. each line from the changelogs)
     const allChanges = changelogs.reduce((all, changelog) => {
@@ -36,7 +36,7 @@ function createReleaseEntry({ changelogs, releaseVersion }) {
     // Group similarlly categorized changes
     const uniqueCategories = [...new Set(allChanges.map(change => change.category))].sort();
     uniqueCategories.forEach(category => {
-        releaseEntry += `### ${category}\n\n`;
+        releaseEntry += `#### ${category}\n\n`;
 
         // Add each change under the category header
         const categoryChanges = allChanges.filter(change => change.category === category);
