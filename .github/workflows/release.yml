@@ -7,7 +7,7 @@ on:
         description: Release Type
         type: choice
         required: true
-        default: 'official
+        default: official
         options:
           - official
           - alpha
