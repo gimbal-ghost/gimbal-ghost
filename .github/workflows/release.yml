@@ -7,7 +7,7 @@ on:
         description: Release Type
         type: choice
         required: true
-        default: 'official'
+        default: official
         options:
           - official
           - alpha
@@ -42,12 +42,12 @@ jobs:
         run: npm install
 
       - name: Update Official Version
-        if: ${{ github.events.inputs.releaseType == 'official' }}
+        if: ${{ inputs.releaseType == 'official' }}
         run: npm run version
 
       - name: Update Prerelease Version
-        if: ${{ github.events.inputs.releaseType != 'official' }}
-        run: npm run version -- --prerelease ${{ github.events.inputs.releaseType }}
+        if: ${{ inputs.releaseType != 'official' }}
+        run: npm run version -- --prerelease ${{ inputs.releaseType }}
 
       - name: Get Version
         id: get-version
@@ -80,5 +80,5 @@ jobs:
           bodyFile: "RELEASE-NOTES.md"
           draft: ${{ github.event.inputs.draft }}
           name: ${{ steps.get-version.outputs.version }}
-          prerelease: ${{ github.events.inputs.releaseType != 'official' }}
+          prerelease: ${{ inputs.releaseType != 'official' }}
           tag: ${{ steps.get-version.outputs.version }}
