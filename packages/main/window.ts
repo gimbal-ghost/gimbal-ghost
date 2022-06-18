@@ -76,7 +76,6 @@ export async function createWindow(): Promise<BrowserWindow> {
     });
 
     EventBus.on(EventNames.Every, payload => {
-        console.log('payload', payload);
         window.webContents.send('event', payload);
     });
 
