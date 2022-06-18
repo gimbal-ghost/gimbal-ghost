@@ -7,7 +7,7 @@ on:
         description: Release Type
         type: choice
         required: true
-        default: official
+        default: 'official
         options:
           - official
           - alpha
@@ -78,7 +78,7 @@ jobs:
         with:
           artifacts: "releases/*.exe, releases/*.exe.blockmap, releases/latest.yml"
           bodyFile: "RELEASE-NOTES.md"
-          draft: ${{ github.event.inputs.draft }}
+          draft: ${{ inputs.draft }}
           name: ${{ steps.get-version.outputs.version }}
           prerelease: ${{ inputs.releaseType != 'official' }}
           tag: ${{ steps.get-version.outputs.version }}
