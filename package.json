@@ -10,7 +10,7 @@
         "prebuild": "npm run lint && npm run typecheck && node scripts/build.mjs",
         "build": "electron-builder --windows",
         "version": "node scripts/compile-changelog.mjs",
-        "lint": "eslint --fix .",
+        "lint": "eslint --max-warnings 0",
         "typecheck": "vue-tsc --project packages/renderer/tsconfig.json --noEmit",
         "watch": "node scripts/watch.mjs"
     },

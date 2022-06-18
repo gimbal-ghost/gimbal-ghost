@@ -1,0 +1,30 @@
+name: Pull Request Lint, Typecheck, & Build
+
+on:
+  pull_request:
+    branches: ['main']
+
+jobs:
+  lintAndBuild:
+    name: Lint, Typecheck, & Build
+    runs-on: windows-2022
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.1.1
+        with:
+          node-version: 16.14.x
+          cache: npm
+
+      - name: NPM Install
+        run: npm install
+
+      - name: Lint
+        run: npx 
+
+      - name: Lint, Typecheck, & Build (npm run build)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run build
