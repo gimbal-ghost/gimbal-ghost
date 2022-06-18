@@ -1,5 +1,5 @@
 import path from 'path';
-import { BlackboxLog } from './BlackboxLog';
+import { BlackboxLog } from './BlackBoxLog';
 import { FrameResolver } from './FrameResolver';
 import { log } from '../logger';
 import { getAsarUnpackedPath } from '../utils';
