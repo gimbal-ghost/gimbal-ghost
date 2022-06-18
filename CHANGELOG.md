@@ -1,3 +1,15 @@
+# v1.0.0-alpha.2 - Saturday, June 18, 2022, 4:04 PM UTC
+
+## Changes in this Release
+
+### ADDED
+
+* Progress feedback for each flight in a blackbox log.
+* Open latest release notes by clicking current version.
+* Drag and drop blackbox files to queue.
+* Button to open folder containing the blackbox file to see output videos.
+
+
 # 1.0.0-alpha.1
 
 ## Changes in this Release
