@@ -1,17 +1,13 @@
 <script setup lang="ts">
-import { BlackboxInfo } from '../types';
+import { useRootStore, BlackboxInfo } from '../store';
+
+const store = useRootStore();
 
 interface Props {
     blackboxFiles: Array<BlackboxInfo>
 }
 
-interface Emit {
-    (event: 'removeFile', logPath: string): void,
-    (event: 'openDirectory', logPath: string): void,
-}
-
 const props = defineProps<Props>();
-const emit = defineEmits<Emit>();
 </script>
 
 <template>
@@ -38,9 +34,9 @@ const emit = defineEmits<Emit>();
                     viewBox="0 0 24 24"
                     role="button"
                     tabindex="0"
-                    @click="emit('openDirectory', blackboxFile.logPath)"
-                    @keydown.enter="emit('openDirectory', blackboxFile.logPath)"
-                    @keydown.space="emit('openDirectory', blackboxFile.logPath)"
+                    @click="store.openDirectory(blackboxFile.logPath)"
+                    @keydown.enter="store.openDirectory(blackboxFile.logPath)"
+                    @keydown.space="store.openDirectory(blackboxFile.logPath)"
                 >
                     <path d="M6.1,10L4,18V8H21A2,2 0 0,0 19,6H12L10,4H4A2,2 0 0,0 2,6V18A2,2 0 0,0 4,20H19C19.9,20 20.7,19.4 20.9,18.5L23.2,10H6.1M19,18H6L7.6,12H20.6L19,18Z" />
                 </svg>
@@ -54,9 +50,9 @@ const emit = defineEmits<Emit>();
                     stroke-width="2"
                     role="button"
                     tabindex="0"
-                    @click="emit('removeFile', blackboxFile.logPath)"
-                    @keydown.enter="emit('removeFile', blackboxFile.logPath)"
-                    @keydown.space="emit('removeFile', blackboxFile.logPath)"
+                    @click="store.removeFile(blackboxFile.logPath)"
+                    @keydown.enter="store.removeFile(blackboxFile.logPath)"
+                    @keydown.space="store.removeFile(blackboxFile.logPath)"
                 >
                     <path
                         stroke-linecap="round"
@@ -112,7 +108,7 @@ const emit = defineEmits<Emit>();
         <div class="flex-col justify-center items-center text-center">
             <div class="flex justify-center items-center my-3">
                 <img
-                    src="../../public/gimbal-ghost.png"
+                    src="/gimbal-ghost.png"
                     alt="Gimbal Ghost"
                     class="h-20 text-center"
                 >

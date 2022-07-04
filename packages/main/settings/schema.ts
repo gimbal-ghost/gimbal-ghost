@@ -1,14 +1,20 @@
 import { Schema } from 'electron-store';
+import { TransmitterModes } from '../renderer/types';
 
-export interface ISettings {
+export interface GimbalRenderSettings {
+    mode: TransmitterModes,
+}
+
+export interface AppSettings {
     firstLoad: boolean,
     windowPosition: {
         x: number,
         y: number
-    }
+    },
+    gimbalRenderSettings: GimbalRenderSettings
 }
 
-export const schema: Schema<ISettings> = {
+export const schema: Schema<AppSettings> = {
     firstLoad: {
         type: 'boolean',
         default: true,
@@ -19,6 +25,13 @@ export const schema: Schema<ISettings> = {
         properties: {
             x: { type: 'integer', default: 0 },
             y: { type: 'integer', default: 0 },
+        },
+    },
+    gimbalRenderSettings: {
+        type: 'object',
+        default: {},
+        properties: {
+            mode: { type: 'integer', default: TransmitterModes.Mode2 },
         },
     },
 };
