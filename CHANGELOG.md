@@ -1,3 +1,10 @@
+### Changes in this Release
+
+#### ADDED
+
+* Settings page with transmitter mode selection.
+
+
 # v1.0.0-alpha.2 - Saturday, June 18, 2022, 4:09 PM UTC
 
 ## Changes in this Release
