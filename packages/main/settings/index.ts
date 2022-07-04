@@ -1,6 +1,6 @@
 import Store from 'electron-store';
-import { schema, ISettings } from './schema';
+import { schema, AppSettings } from './schema';
 
-export const Settings = new Store<ISettings>({
+export const Settings = new Store<AppSettings>({
     schema,
 });

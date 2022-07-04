@@ -3,9 +3,11 @@ import { BlackboxLog } from './BlackBoxLog';
 import { FrameResolver } from './FrameResolver';
 import { log } from '../logger';
 import { getAsarUnpackedPath } from '../utils';
+import { GimbalRenderSettings } from '../settings/schema';
 
 export interface RenderLogsOptions {
-    blackboxLogPaths: string[]
+    blackboxLogPaths: string[],
+    gimbalRenderSettings: GimbalRenderSettings,
 }
 
 async function getBlackboxLogObjects(
@@ -22,13 +24,14 @@ async function getBlackboxLogObjects(
 }
 
 // TODO: Implement error handling
-export async function renderLogs({ blackboxLogPaths } = {} as RenderLogsOptions): Promise<boolean> {
+export async function renderLogs({ blackboxLogPaths, gimbalRenderSettings } = {} as RenderLogsOptions): Promise<boolean> {
     try {
         // Create a frame resolver with the stick manifest
         // Default sticks are unpacked from asar
         const stickManifestFilePath = getAsarUnpackedPath(path.resolve(__dirname, './default-gimbals/gg-manifest.json'));
         const frameResolver = new FrameResolver({
             stickManifestPath: stickManifestFilePath,
+            transmitterMode: gimbalRenderSettings.mode,
             fps: 30,
         });
 

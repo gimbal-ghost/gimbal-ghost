@@ -2,6 +2,8 @@ import { ipcMain, dialog, shell } from 'electron';
 import path from 'path';
 import { renderLogs, RenderLogsOptions } from '../renderer';
 import pkg from '../../../package.json';
+import { GimbalRenderSettings } from '../settings/schema';
+import { Settings } from '../settings';
 
 async function getBlackboxFilePaths(): Promise<string[] | null> {
     const { canceled, filePaths } = await dialog.showOpenDialog({
@@ -32,9 +34,14 @@ function openChangelog() {
     shell.openExternal(changelogUrl);
 }
 
+function updateGimbalRenderSettings(event: any, gimbalRenderSettings: GimbalRenderSettings): void {
+    Settings.set('gimbalRenderSettings', gimbalRenderSettings);
+}
+
 export function registerMainIPCHandlers(): void {
     ipcMain.handle('getBlackboxFilePaths', getBlackboxFilePaths);
     ipcMain.handle('render', render);
     ipcMain.handle('openDirectory', openDirectory);
     ipcMain.handle('openChangelog', openChangelog);
+    ipcMain.handle('updateGimbalRenderSettings', updateGimbalRenderSettings);
 }

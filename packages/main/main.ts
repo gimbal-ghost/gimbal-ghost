@@ -1,6 +1,7 @@
 import { app } from 'electron';
 import { release } from 'os';
 import { autoUpdater } from 'electron-updater';
+import installExtension from 'electron-devtools-installer';
 import { registerMainIPCHandlers } from './ipc/ipc';
 import pkg from '../../package.json';
 import { log } from './logger';
@@ -30,6 +31,13 @@ if (!app.requestSingleInstanceLock()) {
 app.enableSandbox();
 
 app.whenReady().then(async () => {
+    // If in development mode then load devtools
+    if (!app.isPackaged) {
+        const vueDevToolsChromeStoreId = 'nhdogjmejiglipccpnnnanhbledajbpd';
+        installExtension(vueDevToolsChromeStoreId)
+        .then(name => console.log(`Added Extension:  ${name}`))
+        .catch(err => console.log('An error occurred when adding chrome extension: ', err));
+    }
     autoUpdater.checkForUpdatesAndNotify();
     registerMainIPCHandlers();
     await createWindow();

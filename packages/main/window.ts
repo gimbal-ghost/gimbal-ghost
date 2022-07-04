@@ -75,6 +75,11 @@ export async function createWindow(): Promise<BrowserWindow> {
         return { action: 'deny' };
     });
 
+    window.on('ready-to-show', () => {
+        // Send the loaded settings down to the renderer
+        window.webContents.send('settingsLoaded', Settings.store);
+    });
+
     EventBus.on(EventNames.Every, payload => {
         window.webContents.send('event', payload);
     });
