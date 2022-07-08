@@ -2,6 +2,13 @@
 
 #### ADDED
 
+* Configurable output FPS in settings.
+
+
+### Changes in this Release
+
+#### ADDED
+
 * Settings page with transmitter mode selection.
 
 
