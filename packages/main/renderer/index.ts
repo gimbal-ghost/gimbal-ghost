@@ -32,7 +32,7 @@ export async function renderLogs({ blackboxLogPaths, gimbalRenderSettings } = {}
         const frameResolver = new FrameResolver({
             stickManifestPath: stickManifestFilePath,
             transmitterMode: gimbalRenderSettings.mode,
-            fps: 30,
+            fps: gimbalRenderSettings.outputFps,
         });
 
         // Create the .csv file of blackbox data

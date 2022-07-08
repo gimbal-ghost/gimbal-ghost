@@ -3,6 +3,7 @@ import { TransmitterModes } from '../renderer/types';
 
 export interface GimbalRenderSettings {
     mode: TransmitterModes,
+    outputFps: number,
 }
 
 export interface AppSettings {
@@ -32,6 +33,7 @@ export const schema: Schema<AppSettings> = {
         default: {},
         properties: {
             mode: { type: 'integer', default: TransmitterModes.Mode2 },
+            outputFps: { type: 'integer', default: 30 },
         },
     },
 };

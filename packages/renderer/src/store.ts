@@ -37,6 +37,7 @@ export const useRootStore = defineStore('root', {
             },
             gimbalRenderSettings: {
                 mode: TransmitterModes.Mode2,
+                outputFps: 30,
             },
         },
     }),
