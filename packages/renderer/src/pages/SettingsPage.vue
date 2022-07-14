@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import OutputFPSSelector from '../components/settings/OutputFPSSelector.vue';
 import ModeSelector from '../components/settings/ModeSelector.vue';
-import StyledButton from '../components/StyledButton.vue';
+import PlainButton from '../components/PlainButton.vue';
 import { useRootStore } from '../store';
 
 const store = useRootStore();
@@ -19,8 +19,8 @@ const store = useRootStore();
             overflow-y-scroll
             scrollbar-thin
             pr-1
-            scrollbar-thumb-neutral-100
-            scrollbar-track-neutral-700
+            scrollbar-thumb-slate-100
+            scrollbar-track-slate-700
             "
         >
             <p>Transmitter Mode</p>
@@ -34,7 +34,7 @@ const store = useRootStore();
                 class="mb-3"
             />
         </div>
-        <StyledButton
+        <PlainButton
             label="Back"
             @click="store.showSettings = false"
         />

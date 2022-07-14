@@ -28,10 +28,10 @@ function handleInput(event: Event) {
 <template>
     <select
         class="
-        font-medium
-        text-neutral-800
-        py-0
-        rounded-full
+            font-medium
+            text-slate-800
+            py-0
+            rounded-full
         "
         :value="props.modelValue"
         @input="handleInput"
@@ -39,7 +39,7 @@ function handleInput(event: Event) {
         <option
             v-for="fps in fpsOptions"
             :key="fps"
-            class="font-medium text-neutral-800"
+            class="font-medium text-slate-800"
             :value="fps"
         >
             {{ fps }}

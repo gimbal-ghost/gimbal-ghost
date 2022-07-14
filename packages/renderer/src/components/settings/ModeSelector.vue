@@ -23,16 +23,16 @@ const emit = defineEmits<Emits>();
             <button
                 type="button"
                 class="
-                rounded-l-full
-                inline-block px-3
-                hover:bg-neutral-400
-                bg-neutral-100
-                text-neutral-800
-                font-medium
+                    rounded-l-full
+                    inline-block px-3
+                    hover:brightness-75
+                    font-medium
                 "
                 :class="{
-                    'bg-green-600': props.modelValue === TransmitterModes.Mode1,
-                    'bg-neutral-100': props.modelValue !== TransmitterModes.Mode1,
+                    'bg-blue-600': props.modelValue === TransmitterModes.Mode1,
+                    'bg-slate-100': props.modelValue !== TransmitterModes.Mode1,
+                    'text-slate-300': props.modelValue === TransmitterModes.Mode1,
+                    'text-slate-800': props.modelValue !== TransmitterModes.Mode1,
                 }"
                 @click="emit('update:modelValue', TransmitterModes.Mode1)"
             >
@@ -42,14 +42,15 @@ const emit = defineEmits<Emits>();
             <button
                 type="button"
                 class="
-                inline-block px-3
-                hover:bg-neutral-400
-                text-neutral-800
-                font-medium
+                    inline-block px-3
+                    hover:brightness-75
+                    font-medium
                 "
                 :class="{
-                    'bg-green-600': props.modelValue === TransmitterModes.Mode2,
-                    'bg-neutral-100': props.modelValue !== TransmitterModes.Mode2,
+                    'bg-blue-600': props.modelValue === TransmitterModes.Mode2,
+                    'bg-slate-100': props.modelValue !== TransmitterModes.Mode2,
+                    'text-slate-300': props.modelValue === TransmitterModes.Mode2,
+                    'text-slate-800': props.modelValue !== TransmitterModes.Mode2,
                 }"
                 @click="emit('update:modelValue', TransmitterModes.Mode2)"
             >
@@ -59,15 +60,15 @@ const emit = defineEmits<Emits>();
             <button
                 type="button"
                 class="
-                inline-block px-3
-                hover:bg-neutral-400
-                bg-neutral-100
-                text-neutral-800
-                font-medium
+                    inline-block px-3
+                    hover:brightness-75
+                    font-medium
                 "
                 :class="{
-                    'bg-green-600': props.modelValue === TransmitterModes.Mode3,
-                    'bg-neutral-100': props.modelValue !== TransmitterModes.Mode3,
+                    'bg-blue-600': props.modelValue === TransmitterModes.Mode3,
+                    'bg-slate-100': props.modelValue !== TransmitterModes.Mode3,
+                    'text-slate-300': props.modelValue === TransmitterModes.Mode3,
+                    'text-slate-800': props.modelValue !== TransmitterModes.Mode3,
                 }"
                 @click="emit('update:modelValue', TransmitterModes.Mode3)"
             >
@@ -77,16 +78,16 @@ const emit = defineEmits<Emits>();
             <button
                 type="button"
                 class="
-                rounded-r-full
-                inline-block px-3
-                hover:bg-neutral-400
-                bg-neutral-100
-                text-neutral-800
-                font-medium
+                    rounded-r-full
+                    inline-block px-3
+                    hover:brightness-75
+                    font-medium
                 "
                 :class="{
-                    'bg-green-600': props.modelValue === TransmitterModes.Mode4,
-                    'bg-neutral-100': props.modelValue !== TransmitterModes.Mode4,
+                    'bg-blue-600': props.modelValue === TransmitterModes.Mode4,
+                    'bg-slate-100': props.modelValue !== TransmitterModes.Mode4,
+                    'text-slate-300': props.modelValue === TransmitterModes.Mode4,
+                    'text-slate-800': props.modelValue !== TransmitterModes.Mode4,
                 }"
                 @click="emit('update:modelValue', TransmitterModes.Mode4)"
             >

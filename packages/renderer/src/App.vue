@@ -36,7 +36,7 @@ window.electron.onEvent((ipcRendererEvent: Electron.IpcRendererEvent, event: Eve
 </script>
 
 <template>
-    <div class="text-neutral-100 bg-neutral-800">
+    <div class="text-slate-100 bg-slate-800">
         <MainPage v-if="!store.showSettings" />
         <SettingsPage v-else />
     </div>
