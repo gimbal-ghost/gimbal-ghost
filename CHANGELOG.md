@@ -2,6 +2,18 @@
 
 #### ADDED
 
+* Message to help find rendered files once rendering complete
+
+#### UPDATED
+
+* Color theme to match landing page
+* Font to match landing page
+
+
+### Changes in this Release
+
+#### ADDED
+
 * Configurable output FPS in settings.
 
 
