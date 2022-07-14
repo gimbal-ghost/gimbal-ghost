@@ -13,7 +13,7 @@ const props = defineProps<Props>();
 <template>
     <div
         v-if="props.blackboxFiles.length"
-        class="grow w-full bg-neutral-900 flex-col overflow-y-scroll scrollbar-thin pr-1 scrollbar-thumb-neutral-100 scrollbar-track-neutral-700"
+        class="grow w-full bg-slate-900 flex-col overflow-y-scroll scrollbar-thin pr-1 scrollbar-thumb-slate-100 scrollbar-track-slate-700"
     >
         <div
             v-for="blackboxFile in props.blackboxFiles"
@@ -29,7 +29,7 @@ const props = defineProps<Props>();
 
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="flex-none h-6 w-6 hover:text-neutral-400 outline-neutral-100"
+                    class="flex-none h-6 w-6 hover:text-blue-600 outline-slate-100 outline-1"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                     role="button"
@@ -43,7 +43,7 @@ const props = defineProps<Props>();
 
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="flex-none ml-2 h-6 w-6 hover:text-red-600 outline-neutral-100"
+                    class="flex-none ml-2 h-6 w-6 hover:text-blue-600 outline-slate-100"
                     fill="currentColor"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -69,7 +69,7 @@ const props = defineProps<Props>();
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="ml-1 h-5 w-5 outline-neutral-100"
+                    class="ml-1 h-5 w-5 outline-slate-100"
                     fill="currentColor"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -84,11 +84,11 @@ const props = defineProps<Props>();
 
                 <div class="grow flex items-center">
                     <div
-                        class="w-full mx-2 h-3 bg-neutral-700"
+                        class="w-full mx-2 h-3 bg-slate-700"
                         :class="{'animate-pulse': !['rendering', 'complete'].includes(flightEvent.status)}"
                     >
                         <div
-                            class="bg-green-600 h-3"
+                            class="bg-gradient-to-b from-blue-500 to-blue-800 h-3"
                             :style="{width: `${flightEvent.progress}%`}"
                         />
                     </div>
@@ -103,7 +103,7 @@ const props = defineProps<Props>();
 
     <div
         v-else
-        class="grow w-full bg-neutral-900 flex justify-center items-center"
+        class="grow w-full bg-slate-900 flex justify-center items-center"
     >
         <div class="flex-col justify-center items-center text-center">
             <div class="flex justify-center items-center my-3">
@@ -114,7 +114,7 @@ const props = defineProps<Props>();
                 >
             </div>
 
-            <h1 class="text-2xl font-semibold">
+            <h1 class="text-4xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-b from-blue-500 to-blue-800">
                 Gimbal Ghost
             </h1>
 

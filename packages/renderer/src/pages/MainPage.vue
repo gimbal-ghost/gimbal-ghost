@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import StyledButton from '../components/StyledButton.vue';
 import VersionLink from '../components/VersionLink.vue';
 import { useRootStore } from '../store';
 import BlackboxFileList from '../components/BlackboxFileList.vue';
 import MessageText from '../components/MessageText.vue';
+import PlainButton from '../components/PlainButton.vue';
+import PrimaryButton from '../components/PrimaryButton.vue';
 
 const store = useRootStore();
 
@@ -35,7 +36,7 @@ function drop(event: DragEvent) {
     <div class="flex flex-col items-center p-4 h-screen gap-4">
         <BlackboxFileList
             class="border-dashed border-2"
-            :class="{'border-neutral-100': store.dragPresent, 'border-transparent': !store.dragPresent}"
+            :class="{'border-slate-100': store.dragPresent, 'border-transparent': !store.dragPresent}"
             draggable
             :blackbox-files="store.blackboxFiles"
             @dragenter.prevent="dragenter"
@@ -45,22 +46,21 @@ function drop(event: DragEvent) {
         />
 
         <div class="flex item-center gap-4">
-            <StyledButton
+            <PlainButton
                 label="Select Blackbox Files"
                 :disabled="store.isRendering"
                 @click="store.getBlackboxFilePaths"
             />
 
-            <StyledButton
+            <PlainButton
                 label="Settings"
                 :disabled="store.isRendering"
                 @click="store.showSettings = true"
             />
         </div>
 
-        <StyledButton
+        <PrimaryButton
             label="Render"
-            color="green-600"
             :disabled="!store.hasBlackboxFiles || store.isRendering"
             @click="store.renderLogs"
         />

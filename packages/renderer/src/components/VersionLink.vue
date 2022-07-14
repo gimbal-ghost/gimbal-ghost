@@ -7,7 +7,7 @@ const store = useRootStore();
 <template>
     <a
         href=""
-        class="text-xs font-thin underline hover:text-neutral-400"
+        class="text-xs font-thin hover:underline hover:text-slate-400"
         @click.prevent="store.openChangelog"
     >
         v{{ store.version }}

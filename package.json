@@ -85,7 +85,7 @@
                     ]
                 }
             ],
-            "artifactName": "${productName}-${version}.${ext}",
+            "artifactName": "${productName}.${ext}",
             "icon": "dist/main/icon.ico"
         },
         "nsis": {

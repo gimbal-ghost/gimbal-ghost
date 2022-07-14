@@ -54,7 +54,7 @@ export const useRootStore = defineStore('root', {
             this.message = 'Rendering...';
             const renderSuccessful = await window.electron.render({ blackboxLogPaths: this.logPaths, gimbalRenderSettings: { ...this.settings.gimbalRenderSettings } });
             if (renderSuccessful) {
-                this.message = 'Rendering complete';
+                this.message = 'Rendering complete. Click folder icon above to see results.';
             }
             else {
                 this.message = 'Render Error';
