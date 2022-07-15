@@ -34,6 +34,16 @@ function openChangelog() {
     shell.openExternal(changelogUrl);
 }
 
+function openReadme(event: any, anchorTag: string | null) {
+    if (anchorTag) {
+        const readmeUrl = pkg.homepage.replace('#readme', anchorTag);
+        shell.openExternal(readmeUrl);
+    }
+    else {
+        shell.openExternal(pkg.homepage);
+    }
+}
+
 function updateGimbalRenderSettings(event: any, gimbalRenderSettings: GimbalRenderSettings): void {
     Settings.set('gimbalRenderSettings', gimbalRenderSettings);
 }
@@ -43,5 +53,6 @@ export function registerMainIPCHandlers(): void {
     ipcMain.handle('render', render);
     ipcMain.handle('openDirectory', openDirectory);
     ipcMain.handle('openChangelog', openChangelog);
+    ipcMain.handle('openReadme', openReadme);
     ipcMain.handle('updateGimbalRenderSettings', updateGimbalRenderSettings);
 }

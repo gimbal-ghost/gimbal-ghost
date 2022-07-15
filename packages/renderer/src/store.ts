@@ -67,6 +67,9 @@ export const useRootStore = defineStore('root', {
         openChangelog() {
             window.electron.openChangelog();
         },
+        openReadme(anchorTag: String | null = null) {
+            window.electron.openReadme(anchorTag);
+        },
         async getBlackboxFilePaths() {
             this.message = null;
             const blackboxPaths: string[] | null = await window.electron.getBlackboxFilePaths();

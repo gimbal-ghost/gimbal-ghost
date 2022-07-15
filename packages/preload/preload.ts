@@ -9,6 +9,7 @@ export type ContextBridgeAPI = {
     render: (renderOptions: RenderLogsOptions) => Promise<Error | boolean>,
     openDirectory: (logPath: string) => void,
     openChangelog: () => void,
+    openReadme: (anchorTag: string | null) => void,
     updateGimbalRenderSettings: (gimbalRenderSettings: GimbalRenderSettings) => void,
     // Main to renderer process
     onEvent: (callback: () => void) => void,
@@ -21,6 +22,7 @@ const api: ContextBridgeAPI = {
     render: (renderOptions: RenderLogsOptions) => ipcRenderer.invoke('render', renderOptions),
     openDirectory: (logPath: string) => ipcRenderer.invoke('openDirectory', logPath),
     openChangelog: () => ipcRenderer.invoke('openChangelog'),
+    openReadme: (anchorTag: string | null) => ipcRenderer.invoke('openReadme', anchorTag),
     updateGimbalRenderSettings: (gimbalRenderSettings: GimbalRenderSettings) => ipcRenderer.invoke('updateGimbalRenderSettings', gimbalRenderSettings),
     // Main to renderer process
     onEvent: callback => ipcRenderer.on('event', callback),
