@@ -1,5 +1,8 @@
-# 👻 Gimbal Ghost
-Gimbal Ghost is a desktop app allowing you to quickly create high quality 3D video of your gimbal sticks from your Betaflight blackbox logs. Think stick cam, but with a ghost moving the gimbals. 😜
+![Gimbal Ghost](/banner.png)
+
+**Gimbal Ghost is a desktop app allowing you to quickly create high quality 3D video of your gimbal sticks from your Betaflight blackbox logs.**
+
+Think stick cam, but with a ghost moving the gimbals. 😜
 
 ## 🚀 Motivation
 I have learned the most from FPV flight videos where I can clearly see the pilot's gimbals and could then go out and try what they did in the field. The current standard of using a "Stick Cam" comes with the overhead of an extra camera, extra time in post processing and frankly an imperfect view of the gimbals--quite a barrier to entry. Wouldn't it be great if we could all easily show our stick movements in our videos?
@@ -8,8 +11,8 @@ In creating Gimbal Ghost I wanted to make posting a video with a view of your gi
 
 Go out and fly! And if you do post video for others, add Gimbal Ghost to it so we all can learn from you!
 
-## 🤟 Special Thanks
-I owe a special thanks to Bastian Sondermann and the 3D models in his [BlackboxSticksExporter3D](https://github.com/bsondermann/BlackboxSticksExporter3D) tool. The 3D models in Gimbal Ghost are created from the 3D models from Bastian. I used his tool for quite some time in my search for an answer to this problem until Windows 11 rendered it inoperable. In many ways his tool was the inspiration for this one.
+## ✨ Special Thanks
+I owe a special thanks to Bastian Sondermann and the 3D models in his [BlackboxSticksExporter3D](https://github.com/bsondermann/BlackboxSticksExporter3D) tool. The 3D models in Gimbal Ghost are created from the 3D models from Bastian. I used his tool for quite some time in my search for an answer to this problem. In many ways his tool was the inspiration for this one.
 
 ## 🏗️ Architecture
 The process of creating a 3D video of transmitter sticks from blackbox data is comprised of three high levels steps:
@@ -29,6 +32,9 @@ The process of creating a 3D video of transmitter sticks from blackbox data is c
     * The left gimbal input stream is padded with transparent pixels to provide spacing from the right gimbal in the final video.
     * The padded left gimbal stream is then horizontally stacked with the right gimbal input stream giving a top down view of the tranmitter with left and right gimbals.
     * The resulting output stream is encoded in a format with transparency (Apple Pro res 4444) to arrive at a final video that can be overlayed on flight footage.
+
+## 🤟 Donate
+If you find Gimbal Ghost helpful consider dropping some ETH/BTC to `jdavidson.eth` or donating via PayPal [here](https://paypal.me/jwaynedavidson). Thanks for your support!
 
 ## 📝 License
 Licensed under GPLv3.

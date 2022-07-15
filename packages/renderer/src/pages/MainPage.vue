@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import VersionLink from '../components/VersionLink.vue';
+import PageFooter from '../components/PageFooter.vue';
 import { useRootStore } from '../store';
 import BlackboxFileList from '../components/BlackboxFileList.vue';
 import MessageText from '../components/MessageText.vue';
@@ -67,7 +67,7 @@ function drop(event: DragEvent) {
 
         <MessageText />
 
-        <VersionLink />
+        <PageFooter />
     </div>
 </template>
 
