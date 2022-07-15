@@ -2,6 +2,13 @@
 
 #### ADDED
 
+* Dontation button
+
+
+### Changes in this Release
+
+#### ADDED
+
 * Message to help find rendered files once rendering complete
 
 #### UPDATED
