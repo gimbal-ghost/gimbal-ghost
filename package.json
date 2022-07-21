@@ -85,7 +85,7 @@
                     ]
                 }
             ],
-            "artifactName": "${productName}.${ext}",
+            "artifactName": "GimbalGhost.${ext}",
             "icon": "dist/main/icon.ico"
         },
         "nsis": {
