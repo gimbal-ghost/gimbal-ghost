@@ -6,7 +6,7 @@ function createReleaseEntry({ changelogs, releaseVersion }) {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', timeZoneName: 'short',
     });
 
-    let releaseEntry = `### Changes in this Release\n\n`;
+    let releaseEntry = `### Changes in this Release\n`;
 
     // Get a list of all indiviudal changes (i.e. each line from the changelogs)
     const allChanges = changelogs.reduce((all, changelog) => {
@@ -36,21 +36,25 @@ function createReleaseEntry({ changelogs, releaseVersion }) {
     // Group similarlly categorized changes
     const uniqueCategories = [...new Set(allChanges.map(change => change.category))].sort();
     uniqueCategories.forEach(category => {
-        releaseEntry += `#### ${category}\n\n`;
+        releaseEntry += `#### ${category}\n`;
 
         // Add each change under the category header
         const categoryChanges = allChanges.filter(change => change.category === category);
         categoryChanges.forEach(change => {
             releaseEntry += `* ${change.content}\n`
         });
-
-        releaseEntry += '\n';
     });
 
     releaseEntry = releaseEntry.trim();
 
     // Write the release notes to a file to be used for github release
-    fs.writeFileSync(path.resolve(path.join(__dirname, '..', 'RELEASE-NOTES.md')), releaseEntry);
+    releaseNotesHeader = fs.readFileSync(path.join(__dirname, '..', 'RELEASE-HEADER.md'));
+    releaseNotes = `${releaseNotesHeader}${releaseEntry}`;
+    fs.writeFileSync(path.resolve(path.join(__dirname, '..', 'RELEASE-NOTES.md')), releaseNotes);
+
+    // Prepend the version and date for changelog entry
+    const changelogTitle = `# ${releaseVersion}\n${releaseDate}\n`;
+    releaseEntry = `${changelogTitle}${releaseEntry}`;
 
     return releaseEntry;
 }

@@ -65,7 +65,7 @@
     },
     "build": {
         "appId": "com.electron.gimbal-ghost",
-        "productName": "GimbalGhost",
+        "productName": "Gimbal Ghost",
         "asarUnpack": [
             "**/default-gimbals/**/*.*",
             "**/vendor/**/*.*"
