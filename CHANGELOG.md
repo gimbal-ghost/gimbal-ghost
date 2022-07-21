@@ -1,3 +1,10 @@
+# 1.0.0-alpha.7
+Thursday, July 21, 2022, 2:53 AM UTC
+### Changes in this Release
+#### FIXED
+* Custom fonts not loading
+
+
 # v1.0.0-alpha.6
 ### Changes in this Release
 #### ADDED
