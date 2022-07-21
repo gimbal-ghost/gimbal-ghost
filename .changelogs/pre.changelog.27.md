@@ -1,2 +1,2 @@
 patch
-* [ADDED] Dontation button
+* [ADDED] Donation button
