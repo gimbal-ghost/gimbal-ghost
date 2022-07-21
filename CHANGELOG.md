@@ -1,3 +1,22 @@
+# 1.0.0
+Thursday, July 21, 2022, 3:38 AM UTC
+### Changes in this Release
+#### ADDED
+* Progress feedback for each flight in a blackbox log.
+* Open latest release notes by clicking current version.
+* Drag and drop blackbox files to queue.
+* Button to open folder containing the blackbox file to see output videos.
+* Settings page with transmitter mode selection.
+* Configurable output FPS in settings.
+* Message to help find rendered files once rendering complete
+* Donation button
+#### FIXED
+* Custom fonts not loading
+#### UPDATED
+* Color theme to match landing page
+* Font to match landing page
+
+
 # 1.0.0-alpha.7
 Thursday, July 21, 2022, 2:53 AM UTC
 ### Changes in this Release
