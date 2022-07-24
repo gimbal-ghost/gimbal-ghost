@@ -10,11 +10,6 @@ import SettingsPage from './pages/SettingsPage.vue';
 
 const store = useRootStore();
 
-// Sync all changs to the render settings back to the main process
-watch(store.settings.gimbalRenderSettings, (newRenderSettings, oldRenderSettings) => {
-    window.electron.updateGimbalRenderSettings({ ...newRenderSettings });
-});
-
 window.electron.onSettingsLoaded((ipcRendererEvent: Electron.IpcRendererEvent, settings: AppSettings) => {
     store.settings = settings;
 });

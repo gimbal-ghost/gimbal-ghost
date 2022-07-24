@@ -4,6 +4,7 @@ import { renderLogs, RenderLogsOptions } from '../renderer';
 import pkg from '../../../package.json';
 import { GimbalRenderSettings } from '../settings/schema';
 import { Settings } from '../settings';
+import { log } from '../logger';
 
 async function getBlackboxFilePaths(): Promise<string[] | null> {
     const { canceled, filePaths } = await dialog.showOpenDialog({
@@ -45,6 +46,7 @@ function openReadme(event: any, anchorTag: string | null) {
 }
 
 function updateGimbalRenderSettings(event: any, gimbalRenderSettings: GimbalRenderSettings): void {
+    log.info(`Render settings updated: ${JSON.stringify(gimbalRenderSettings)}`);
     Settings.set('gimbalRenderSettings', gimbalRenderSettings);
 }
 
