@@ -18,7 +18,7 @@ if (release().startsWith('6.1')) {
 
 // Set application name for Windows 10+ notifications
 if (process.platform === 'win32') {
-    app.setAppUserModelId(app.getName());
+    app.setAppUserModelId(pkg.build.productName);
 }
 
 // Force app to have a single instance

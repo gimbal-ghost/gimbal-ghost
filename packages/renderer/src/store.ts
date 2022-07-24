@@ -87,5 +87,9 @@ export const useRootStore = defineStore('root', {
                 });
             }
         },
+        updateSettingsInMainProcess() {
+            const renderSettings = this.settings.gimbalRenderSettings;
+            window.electron.updateGimbalRenderSettings({ ...renderSettings });
+        },
     },
 });

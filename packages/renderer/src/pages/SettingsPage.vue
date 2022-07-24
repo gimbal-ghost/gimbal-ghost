@@ -27,11 +27,13 @@ const store = useRootStore();
             <ModeSelector
                 v-model="store.settings.gimbalRenderSettings.mode"
                 class="mb-3"
+                @update:model-value="store.updateSettingsInMainProcess"
             />
             <p>Output FPS</p>
             <OutputFPSSelector
                 v-model="store.settings.gimbalRenderSettings.outputFps"
                 class="mb-3"
+                @update:model-value="store.updateSettingsInMainProcess"
             />
         </div>
         <PlainButton
