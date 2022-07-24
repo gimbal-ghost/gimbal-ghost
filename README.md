@@ -15,7 +15,7 @@ Go out and fly! And if you do post video for others, add Gimbal Ghost to it so w
 I owe a special thanks to Bastian Sondermann and the 3D models in his [BlackboxSticksExporter3D](https://github.com/bsondermann/BlackboxSticksExporter3D) tool. The 3D models in Gimbal Ghost are created from the 3D models from Bastian. I used his tool for quite some time in my search for an answer to this problem. In many ways his tool was the inspiration for this one.
 
 ## 🤟 Donate
-If you find Gimbal Ghost helpful consider dropping some ETH/BTC to `jdavidson.eth` or donating via PayPal [here](https://paypal.me/jwaynedavidson). Thanks for your support!
+If you find Gimbal Ghost helpful, consider dropping some ETH/BTC to `jdavidson.eth` or donating via PayPal [here](https://paypal.me/jwaynedavidson). Thanks for your support!
 
 ## 🏗️ Architecture
 For those interested, the Gimbal Ghost's process of creating a 3D video of transmitter sticks from blackbox data is comprised of three high levels steps:
