@@ -1,3 +1,12 @@
+# 1.0.1
+Sunday, July 24, 2022, 1:14 AM UTC
+### Changes in this Release
+#### FIXED
+* Settings not persisting when closing and opening app
+#### UPDATED
+* Application name for notifications
+
+
 # 1.0.0
 Thursday, July 21, 2022, 3:38 AM UTC
 ### Changes in this Release
