@@ -1,3 +1,10 @@
+# 1.0.2
+Monday, July 25, 2022, 1:32 AM UTC
+### Changes in this Release
+#### FIXED
+* App window not accessible if opened after disconnecting secondary monitors
+
+
 # 1.0.1
 Sunday, July 24, 2022, 1:14 AM UTC
 ### Changes in this Release
