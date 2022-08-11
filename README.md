@@ -1,8 +1,12 @@
 ![Gimbal Ghost](/banner.png)
 
-**Gimbal Ghost is a desktop app allowing you to quickly create high quality 3D video of your gimbal sticks from your Betaflight blackbox logs.**
+### **Gimbal Ghost is a desktop app allowing you to quickly create high quality 3D video of your gimbal sticks from your Betaflight blackbox logs.**
 
 Think stick cam, but with a ghost moving the gimbals. 😜
+
+[See it in action here!](https://www.youtube.com/watch?v=YBo_f63ywRY)
+
+Give it a whirl by downloading from the [releases page](https://github.com/gimbal-ghost/gimbal-ghost/releases). 
 
 ## 🚀 Motivation
 I have learned the most from FPV flight videos where I can clearly see the pilot's gimbals and could then go out and try what they did in the field. The current standard of using a "Stick Cam" comes with the overhead of an extra camera, extra time in post processing and frankly an imperfect view of the gimbals--quite a barrier to entry. Wouldn't it be great if we could all easily show our stick movements in our videos?
