@@ -6,7 +6,7 @@ import { spawn } from 'child_process';
 import { log } from '../logger';
 import { DemuxFilePair, LogEntry, StickPositions } from './types';
 import { FrameResolver } from './FrameResolver';
-import { getAsarUnpackedPath } from '../utils';
+import { getToolName } from '../utils';
 import { Event, EventNames } from '../event-bus/types';
 import { EventBus } from '../event-bus/EventBus';
 
@@ -84,7 +84,8 @@ export class BlackboxFlight {
             rightDemuxFilePath: path.resolve(this.csvPathInfo.dir, rightDemuxOutputFilename),
         };
 
-        this.ffmpegPath = getAsarUnpackedPath(path.resolve(__dirname, './vendor/ffmpeg/ffmpeg.exe'));
+        this.ffmpegPath = getToolName('ffmpeg');
+        log.debug('this.ffmpegPath:', this.ffmpegPath);
 
         this.emitStatusEvent(BlackboxFlightStatus.Decoded);
     }
@@ -172,13 +173,13 @@ export class BlackboxFlight {
             });
 
             ffmpegProcess.stdout.on('data', data => {
-                log.debug(`[${this.csvPathInfo.name} - ffmpeg.exe] stdout: ${data}`);
+                log.debug(`[${this.csvPathInfo.name} - ffmpeg] stdout: ${data}`);
             });
 
             ffmpegProcess.stderr.on('data', (data: Buffer) => {
                 this.setCurrentFrame(data.toString());
                 this.emitStatusEvent(BlackboxFlightStatus.Rendering);
-                log.debug(`[${this.csvPathInfo.name} - ffmpeg.exe] stderr: ${data}`);
+                log.debug(`[${this.csvPathInfo.name} - ffmpeg] stderr: ${data}`);
             });
 
             ffmpegProcess.on('error', error => {

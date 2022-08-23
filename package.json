@@ -8,7 +8,8 @@
     "main": "dist/main/main.cjs",
     "scripts": {
         "prebuild": "npm run lint && npm run typecheck && node scripts/build.mjs",
-        "build": "electron-builder --windows",
+        "build:windows": "electron-builder --windows",
+        "build:linux": "electron-builder --linux",
         "version": "node scripts/compile-changelog.mjs",
         "lint": "eslint --max-warnings 0",
         "typecheck": "vue-tsc --project packages/renderer/tsconfig.json --noEmit",
@@ -68,7 +69,7 @@
         "productName": "Gimbal Ghost",
         "asarUnpack": [
             "**/default-gimbals/**/*.*",
-            "**/vendor/**/*.*"
+            "**/vendor/**/*"
         ],
         "directories": {
             "output": "releases"
@@ -96,6 +97,16 @@
             "uninstallerIcon": "dist/main/icon.ico",
             "installerSidebar": "dist/main/sidebar.bmp",
             "uninstallerSidebar": "dist/main/sidebar.bmp"
+        },
+        "linux": {
+            "target": [
+                {
+                    "target": "tar.bz2",
+                    "arch": "x64"
+                }
+            ],
+            "artifactName": "gimbal-ghost-${version}.${ext}",
+            "category": "Video"
         }
     }
 }

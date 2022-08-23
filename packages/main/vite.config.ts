@@ -1,3 +1,4 @@
+import os from 'os';
 import { builtinModules } from 'module';
 import { defineConfig } from 'vite';
 import copy from 'rollup-plugin-copy';
@@ -29,7 +30,7 @@ export default defineConfig({
     plugins: [
         copy({
             targets: [
-                { src: 'packages/main/vendor', dest: 'dist/main' },
+                { src: `packages/main/vendor/${os.platform()}`, dest: 'dist/main', rename: 'vendor' },
                 { src: 'packages/main/default-gimbals', dest: 'dist/main' },
             ],
             copyOnce: true,
