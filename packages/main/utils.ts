@@ -1,5 +1,4 @@
 import { app } from 'electron';
-import os from 'os';
 import path from 'path';
 
 // Function to get path to files that are unpacked from asar
@@ -14,14 +13,14 @@ export function getAsarUnpackedPath(asarPath: string): string {
 
 // Function to get the name of an executable for the current platform
 export function getExecutableName(executable: string): string {
-    const extension = os.platform() === 'win32' ? '.exe' : '';
+    const extension = process.platform === 'win32' ? '.exe' : '';
     return executable + extension;
 }
 
 // Get the executable name for a tool. For vendored tools, returns the
 // absolute path. Otherwise, returns the name of the system executable.
 export function getToolName(tool: 'blackbox_decode' | 'ffmpeg'): string {
-    if (tool === 'ffmpeg' && os.platform() === 'linux') {
+    if (tool === 'ffmpeg' && process.platform === 'linux') {
         return 'ffmpeg';
     }
 
