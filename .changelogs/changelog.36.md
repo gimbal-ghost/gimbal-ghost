@@ -1,2 +1,2 @@
 patch
-* [FIXED] Yaw was incorrectly inverted in mode 2.
+* [FIXED] Yaw inverted.
