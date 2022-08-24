@@ -4,7 +4,7 @@
 
 Think stick cam, but with a ghost moving the gimbals. 😜
 
-[See it in action here!](https://www.youtube.com/watch?v=YBo_f63ywRY)
+[See it in action here!](https://www.youtube.com/watch?v=E9Kv2TYGpKA)
 
 Give it a whirl by downloading from the [releases page](https://github.com/gimbal-ghost/gimbal-ghost/releases). 
 

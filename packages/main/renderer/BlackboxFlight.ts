@@ -279,7 +279,8 @@ export class BlackboxFlight {
             time: Number(logData['time (us)']),
             roll: Number(logData['rcCommand[0]']),
             pitch: Number(logData['rcCommand[1]']),
-            yaw: Number(logData['rcCommand[2]']),
+            // Yaw must be inverted from the raw data
+            yaw: -Number(logData['rcCommand[2]']),
             throttle: Number(logData['rcCommand[3]']),
         };
     }
