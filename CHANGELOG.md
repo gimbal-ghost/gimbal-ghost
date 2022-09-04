@@ -1,3 +1,10 @@
+# 1.1.0
+Sunday, September 4, 2022, 2:29 AM UTC
+### Changes in this Release
+#### ADDED
+* Support for .bfl files.
+
+
 # 1.0.3
 Wednesday, August 24, 2022, 1:13 AM UTC
 ### Changes in this Release
