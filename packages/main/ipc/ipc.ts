@@ -5,13 +5,14 @@ import pkg from '../../../package.json';
 import { GimbalRenderSettings } from '../settings/schema';
 import { Settings } from '../settings';
 import { log } from '../logger';
+import { AllowedLogExtensions } from '../renderer/types';
 
 async function getBlackboxFilePaths(): Promise<string[] | null> {
     const { canceled, filePaths } = await dialog.showOpenDialog({
         title: 'Blackbox Files',
         buttonLabel: 'Select',
         filters: [
-            { name: 'Blackbox Files', extensions: ['bbl'] },
+            { name: 'Blackbox Files', extensions: [AllowedLogExtensions.BBL, AllowedLogExtensions.BFL] },
         ],
         properties: ['openFile', 'multiSelections', 'dontAddToRecent'],
     });

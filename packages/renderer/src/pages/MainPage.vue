@@ -5,6 +5,7 @@ import BlackboxFileList from '../components/BlackboxFileList.vue';
 import MessageText from '../components/MessageText.vue';
 import PlainButton from '../components/PlainButton.vue';
 import PrimaryButton from '../components/PrimaryButton.vue';
+import { AllowedLogExtensions } from '../../../main/renderer/types';
 
 const store = useRootStore();
 
@@ -23,8 +24,8 @@ function drop(event: DragEvent) {
     if (files) {
         for (let index = 0; index < files.length; index += 1) {
             const file = files?.item(index);
-            // Ensure that only bbl files are allowed
-            if (file && file.path && file.path.endsWith('.bbl')) {
+            // Ensure that only bbl/bfl files are allowed
+            if (file && file.path && (file.path.toLowerCase().endsWith(AllowedLogExtensions.BBL) || file.path.toLowerCase().endsWith(AllowedLogExtensions.BFL))) {
                 store.addBlackboxFile(file.path);
             }
         }
