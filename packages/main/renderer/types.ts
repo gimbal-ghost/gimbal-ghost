@@ -44,3 +44,10 @@ export enum TransmitterModes {
     Mode3,
     Mode4,
 }
+
+// See: https://github.com/typescript-eslint/typescript-eslint/issues/325
+// eslint-disable-next-line no-shadow
+export enum AllowedLogExtensions {
+    BBL = 'bbl',
+    BFL = 'bfl',
+}

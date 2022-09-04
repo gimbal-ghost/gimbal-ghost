@@ -9,6 +9,7 @@ import { FrameResolver } from './FrameResolver';
 import { log } from '../logger';
 import { getAsarUnpackedPath } from '../utils';
 import { BlackboxFlight } from './BlackboxFlight';
+import { AllowedLogExtensions } from './types';
 
 export interface BlackboxLogOptions {
     logPath: string,
@@ -48,8 +49,8 @@ export class BlackboxLog {
         this.initialLogFile = path.parse(this.initialLogPath);
         this.outputDirectoryPath = outputDirectoryPath;
 
-        if (this.initialLogFile.ext !== '.bbl') {
-            throw Error(`Blackbox log files must end in .bbl. Filename passed: ${this.initialLogFile.base}`);
+        if (![AllowedLogExtensions.BBL, AllowedLogExtensions.BFL].includes(this.initialLogFile.ext.toLowerCase().replace('.', '') as AllowedLogExtensions)) {
+            throw Error(`Blackbox log files must end in .bbl or .bfl. Filename passed: ${this.initialLogFile.base}`);
         }
 
         // Copy log file to a temp directory before performing all operations
