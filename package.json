@@ -87,7 +87,7 @@
                 }
             ],
             "artifactName": "GimbalGhost.${ext}",
-            "icon": "dist/main/icon.ico"
+            "icon": "dist/main/icon.png"
         },
         "nsis": {
             "oneClick": false,
@@ -106,6 +106,7 @@
                 }
             ],
             "artifactName": "GimbalGhost.${ext}",
+            "icon": "dist/main/icon.png",
             "category": "Video"
         }
     }
