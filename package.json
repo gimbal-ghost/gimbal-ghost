@@ -99,8 +99,8 @@
             "oneClick": false,
             "allowElevation": true,
             "allowToChangeInstallationDirectory": true,
-            "installerIcon": "dist/main/icon.ico",
-            "uninstallerIcon": "dist/main/icon.ico",
+            "installerIcon": "dist/main/icon.png",
+            "uninstallerIcon": "dist/main/icon.png",
             "installerSidebar": "dist/main/sidebar.bmp",
             "uninstallerSidebar": "dist/main/sidebar.bmp"
         },
