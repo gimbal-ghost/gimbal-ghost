@@ -101,15 +101,11 @@
         "linux": {
             "target": [
                 {
-                    "target": "tar.bz2",
-                    "arch": "x64"
-                },
-                {
                     "target": "AppImage",
                     "arch": "x64"
                 }
             ],
-            "artifactName": "gimbal-ghost-${version}.${ext}",
+            "artifactName": "GimbalGhost.${ext}",
             "category": "Video"
         }
     }
