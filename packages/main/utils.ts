@@ -1,28 +1,20 @@
 import { app } from 'electron';
 import path from 'path';
 
-// Function to get path to files that are unpacked from asar
-// Unpacked asar files are declared in package.json build.asarUnpack
-export function getAsarUnpackedPath(asarPath: string): string {
-    if (app.isPackaged) {
-        return asarPath.replace('app.asar', 'app.asar.unpacked');
-    }
-
-    return asarPath;
-}
-
 // Get the name of an executable for the current platform
-export function getExecutableName(executable: string): string {
+function getExecutableName(executable: string): string {
     const extension = process.platform === 'win32' ? '.exe' : '';
     return executable + extension;
 }
 
-// Get the executable name for a tool. For vendored tools, returns the
-// absolute path. Otherwise, returns the name of the system executable.
+// Get the absolute path to a vendored tool
 export function getToolName(tool: 'blackbox_decode' | 'ffmpeg'): string {
-    const vendorDir = tool === 'blackbox_decode' ? 'blackbox-tools-0.4.3' : tool;
-    const exeName = getExecutableName(tool);
-    const absolute = path.resolve(__dirname, './vendor/', vendorDir, exeName);
-
-    return getAsarUnpackedPath(absolute);
+    return path.resolve(
+        RESOURCE_PATH,
+        'vendor',
+        tool === 'blackbox_decode' ? 'blackbox-tools' : tool,
+        getExecutableName(tool),
+    );
 }
+
+export const RESOURCE_PATH: string = path.resolve(app.getAppPath(), '..');
