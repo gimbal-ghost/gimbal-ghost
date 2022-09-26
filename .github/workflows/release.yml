@@ -20,9 +20,9 @@ on:
         default: true
 
 jobs:
-  windows-release:
-    name: Windows Release
-    runs-on: windows-2022
+  release:
+    name: Release
+    runs-on: ubuntu-latest
     # Ensure release is only run on main
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:
@@ -68,15 +68,16 @@ jobs:
           script: |
               core.setFailed('Commit failed')
 
-      - name: Build
+      # See https://www.electron.build/multi-platform-build#docker
+      - name: Lint, Typecheck, and Build in Electron Builder Container
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run build
+        run: 'docker run --rm --env-file <(env | grep -iE "DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS_TAG|TRAVIS|TRAVIS_REPO_|TRAVIS_BUILD_|TRAVIS_BRANCH|TRAVIS_PULL_REQUEST_|APPVEYOR_|CSC_|GH_|GITHUB_|BT_|AWS_|STRIP|BUILD_") --env ELECTRON_CACHE="/root/.cache/electron" --env ELECTRON_BUILDER_CACHE="/root/.cache/electron-builder" -v ${PWD}:/project -v ${PWD##*/}-node-modules:/project/node_modules -v ~/.cache/electron:/root/.cache/electron -v ~/.cache/electron-builder:/root/.cache/electron-builder electronuserland/builder:16-wine /bin/bash -c "yarn install && yarn run build"'
 
       - name: Create Release
         uses: ncipollo/release-action@v1.10.0
         with:
-          artifacts: "releases/*.exe, releases/*.exe.blockmap, releases/latest.yml"
+          artifacts: "releases/*.exe, releases/*.exe.blockmap, releases/latest.yml, releases/*.AppImage, releases/latest-linux.yml,"
           bodyFile: "RELEASE-NOTES.md"
           draft: ${{ inputs.draft }}
           name: ${{ steps.get-version.outputs.version }}
