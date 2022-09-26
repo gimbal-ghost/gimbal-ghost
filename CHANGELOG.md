@@ -1,3 +1,10 @@
+# 0.1.0-rc.0
+Monday, September 26, 2022, 3:40 AM UTC
+### Changes in this Release
+#### ADDED
+* Support for Linux. Thanks to @wetheredge for making this possible!
+
+
 # 1.1.0
 Sunday, September 4, 2022, 2:29 AM UTC
 ### Changes in this Release
