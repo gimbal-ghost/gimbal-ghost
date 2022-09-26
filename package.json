@@ -8,7 +8,7 @@
     "main": "dist/main/main.cjs",
     "scripts": {
         "prebuild": "npm run lint && npm run typecheck && node scripts/build.mjs",
-        "build": "electron-builder --windows",
+        "build": "electron-builder --windows --linux",
         "version": "node scripts/compile-changelog.mjs",
         "lint": "eslint --max-warnings 0",
         "typecheck": "vue-tsc --project packages/renderer/tsconfig.json --noEmit",
@@ -49,7 +49,6 @@
         "eslint-plugin-vue": "^9.0.1",
         "pinia": "^2.0.14",
         "postcss": "^8.4.12",
-        "rollup-plugin-copy": "^3.4.0",
         "semver": "^7.3.7",
         "simple-git": "^3.7.1",
         "stream-transform": "^3.0.4",
@@ -66,15 +65,21 @@
     "build": {
         "appId": "com.electron.gimbal-ghost",
         "productName": "Gimbal Ghost",
-        "asarUnpack": [
-            "**/default-gimbals/**/*.*",
-            "**/vendor/**/*.*"
-        ],
         "directories": {
             "output": "releases"
         },
         "files": [
             "dist"
+        ],
+        "extraResources": [
+            {
+                "from": "packages/main/default-gimbals",
+                "to": "default-gimbals"
+            },
+            {
+                "from": "packages/main/vendor/${os}",
+                "to": "vendor"
+            }
         ],
         "win": {
             "target": [
@@ -96,6 +101,17 @@
             "uninstallerIcon": "dist/main/icon.ico",
             "installerSidebar": "dist/main/sidebar.bmp",
             "uninstallerSidebar": "dist/main/sidebar.bmp"
+        },
+        "linux": {
+            "target": [
+                {
+                    "target": "AppImage",
+                    "arch": "x64"
+                }
+            ],
+            "artifactName": "GimbalGhost.${ext}",
+            "icon": "dist/main/icon.png",
+            "category": "Video"
         }
     }
 }

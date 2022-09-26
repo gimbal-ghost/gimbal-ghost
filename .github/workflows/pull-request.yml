@@ -7,21 +7,13 @@ on:
 jobs:
   lintAndBuild:
     name: Lint, Typecheck, & Build
-    runs-on: windows-2022
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v3.1.1
-        with:
-          node-version: 16.14.x
-          cache: npm
-
-      - name: NPM Install
-        run: npm install
-
-      - name: Lint, Typecheck, & Build (npm run build)
+      # See https://www.electron.build/multi-platform-build#docker
+      - name: Lint, Typecheck, and Build in Electron Builder Container
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run build
+        run: 'docker run --rm --env-file <(env | grep -iE "DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS_TAG|TRAVIS|TRAVIS_REPO_|TRAVIS_BUILD_|TRAVIS_BRANCH|TRAVIS_PULL_REQUEST_|APPVEYOR_|CSC_|GH_|GITHUB_|BT_|AWS_|STRIP|BUILD_") --env ELECTRON_CACHE="/root/.cache/electron" --env ELECTRON_BUILDER_CACHE="/root/.cache/electron-builder" -v ${PWD}:/project -v ${PWD##*/}-node-modules:/project/node_modules -v ~/.cache/electron:/root/.cache/electron -v ~/.cache/electron-builder:/root/.cache/electron-builder electronuserland/builder:16-wine /bin/bash -c "yarn install && yarn run build"'

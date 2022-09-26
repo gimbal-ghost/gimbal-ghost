@@ -7,7 +7,7 @@ import { tmpdir } from 'os';
 import path from 'path';
 import { FrameResolver } from './FrameResolver';
 import { log } from '../logger';
-import { getAsarUnpackedPath } from '../utils';
+import { getToolName } from '../utils';
 import { BlackboxFlight } from './BlackboxFlight';
 import { AllowedLogExtensions } from './types';
 
@@ -34,17 +34,13 @@ export class BlackboxLog {
 
     private outputDirectoryPath: string;
 
-    private ffmpegPath: string;
-
     private blackboxFlights: BlackboxFlight[] = [];
 
     constructor({ logPath, frameResolver, outputDirectoryPath } = {} as BlackboxLogOptions) {
         this.frameResolver = frameResolver;
         this.tempDirectory = mkdtempSync(path.join(tmpdir(), 'gimbal-ghost-'));
-        log.debug('__dirname:', __dirname);
-        this.blackboxDecodePath = getAsarUnpackedPath(path.resolve(__dirname, './vendor/blackbox-tools-0.4.3-windows/blackbox_decode.exe'));
+        this.blackboxDecodePath = getToolName('blackbox_decode');
         log.debug('this.blackboxDecodePath:', this.blackboxDecodePath);
-        this.ffmpegPath = getAsarUnpackedPath(path.resolve(__dirname, './vendor/ffmpeg/ffmpeg.exe'));
         this.initialLogPath = logPath;
         this.initialLogFile = path.parse(this.initialLogPath);
         this.outputDirectoryPath = outputDirectoryPath;
@@ -66,11 +62,11 @@ export class BlackboxLog {
             const decodeProcess = spawn(this.blackboxDecodePath, [this.tempLogPath]);
 
             decodeProcess.stdout.on('data', data => {
-                log.debug(`[${this.tempLogFile.base} - blackbox_decode.exe] stdout:, ${data}`);
+                log.debug(`[${this.tempLogFile.base} - blackbox_decode] stdout:, ${data}`);
             });
 
             decodeProcess.stderr.on('data', data => {
-                log.debug(`[${this.tempLogFile.base} - blackbox_decode.exe] stderr:, ${data}`);
+                log.debug(`[${this.tempLogFile.base} - blackbox_decode] stderr:, ${data}`);
             });
 
             decodeProcess.on('close', code => {
