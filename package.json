@@ -8,9 +8,7 @@
     "main": "dist/main/main.cjs",
     "scripts": {
         "prebuild": "npm run lint && npm run typecheck && node scripts/build.mjs",
-        "build": "electron-builder",
-        "build:windows": "npm run build -- --windows",
-        "build:linux": "npm run build -- --linux",
+        "build": "electron-builder --windows --linux",
         "version": "node scripts/compile-changelog.mjs",
         "lint": "eslint --max-warnings 0",
         "typecheck": "vue-tsc --project packages/renderer/tsconfig.json --noEmit",
