@@ -1,6 +1,6 @@
 {
     "name": "gimbal-ghost",
-    "version": "1.1.0",
+    "version": "1.2.0-rc.0",
     "author": "Joshua Davidson",
     "license": "GPL-3.0-or-later",
     "private": true,
@@ -60,7 +60,7 @@
         "vue-tsc": "^0.34.7"
     },
     "changelog": {
-        "prereleaseInitialVersion": "0.0.0"
+        "prereleaseInitialVersion": "1.1.0"
     },
     "build": {
         "appId": "com.electron.gimbal-ghost",
