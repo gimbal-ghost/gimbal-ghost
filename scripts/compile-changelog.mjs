@@ -174,7 +174,7 @@ if (isPrerelease && prereleaseId) {
     const initialVersion = pkg.changelog.prereleaseInitialVersion;
     const changelogBumpVersion = semver.inc(initialVersion, prevailingVersionBump);
     if (semver.gt(changelogBumpVersion, currentMajorMinorPatch) || !currentVersionIsPrerelease) {
-        releaseVersion = semver.inc(initialVersion, `pre${prevailingVersionBump}`, prereleaseId);
+        releaseVersion = semver.inc(currentVersion, `pre${prevailingVersionBump}`, prereleaseId);
     }
     // Leave raw version alone and just increment the prerelease version
     else {
