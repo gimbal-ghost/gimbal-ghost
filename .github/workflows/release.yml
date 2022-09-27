@@ -77,7 +77,7 @@ jobs:
       - name: Create Release
         uses: ncipollo/release-action@v1.10.0
         with:
-          artifacts: "releases/*.exe, releases/*.exe.blockmap, releases/latest.yml, releases/*.AppImage, releases/latest-linux.yml,"
+          artifacts: "releases/*.exe, releases/*.exe.blockmap, releases/latest.yml, releases/*.AppImage, releases/latest-linux.yml"
           bodyFile: "RELEASE-NOTES.md"
           draft: ${{ inputs.draft }}
           name: ${{ steps.get-version.outputs.version }}
