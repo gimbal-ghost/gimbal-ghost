@@ -1,6 +1,6 @@
 {
     "name": "gimbal-ghost",
-    "version": "1.2.0-rc.0",
+    "version": "1.2.0",
     "author": "Joshua Davidson",
     "license": "GPL-3.0-or-later",
     "private": true,
