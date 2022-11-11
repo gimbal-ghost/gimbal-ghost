@@ -1,3 +1,10 @@
+# 1.2.1
+Friday, November 11, 2022, 12:44 AM UTC
+### Changes in this Release
+#### FIXED
+* EmuFlight logs not rendering on Linux.
+
+
 # 1.2.1-rc.0
 Thursday, November 10, 2022, 2:23 AM UTC
 ### Changes in this Release
