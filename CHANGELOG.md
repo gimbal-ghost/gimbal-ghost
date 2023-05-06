@@ -1,3 +1,10 @@
+# 1.2.2-rc.0
+Saturday, May 6, 2023, 8:02 PM UTC
+### Changes in this Release
+#### UPDATED
+* Updated dependencies to improve security
+
+
 # 1.2.1
 Friday, November 11, 2022, 12:44 AM UTC
 ### Changes in this Release
