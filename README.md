@@ -8,6 +8,9 @@ Think stick cam, but with a ghost moving the gimbals. 😜
 
 Give it a whirl by downloading from the [releases page](https://github.com/gimbal-ghost/gimbal-ghost/releases). 
 
+## ⚠️ Note About Empty/Black Output Videos
+Gimbal Ghost output videos use the Apple ProRes 4444 codec and will not play by default on most machines. If you play the output video files and don't see anything, you are missing this codec. Simply load the video files into your video editing application of choice (DaVinci Resolve, Adobe Premiere, etc.), and you will have no issues viewing or editing the file. 
+
 ## 🚀 Motivation
 I have learned the most from FPV flight videos where I can clearly see the pilot's gimbals and could then go out and try what they did in the field. The current standard of using a "Stick Cam" comes with the overhead of an extra camera, extra time in post processing and frankly an imperfect view of the gimbals--quite a barrier to entry. Wouldn't it be great if we could all easily show our stick movements in our videos?
 
