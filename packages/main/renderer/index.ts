@@ -31,6 +31,7 @@ export async function renderLogs({ blackboxLogPaths, gimbalRenderSettings } = {}
         const stickManifestFilePath = path.resolve(RESOURCE_PATH, './default-gimbals/gg-manifest.json');
         const frameResolver = new FrameResolver({
             stickManifestPath: stickManifestFilePath,
+            blackboxSource: gimbalRenderSettings.blackboxSource,
             transmitterMode: gimbalRenderSettings.mode,
             fps: gimbalRenderSettings.outputFps,
         });

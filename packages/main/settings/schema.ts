@@ -1,9 +1,10 @@
 import { Schema } from 'electron-store';
-import { TransmitterModes } from '../renderer/types';
+import { TransmitterModes, BlackboxSources } from '../renderer/types';
 
 export interface GimbalRenderSettings {
     mode: TransmitterModes,
     outputFps: number,
+    blackboxSource: BlackboxSources,
 }
 
 export interface AppSettings {
@@ -34,6 +35,7 @@ export const schema: Schema<AppSettings> = {
         properties: {
             mode: { type: 'integer', default: TransmitterModes.Mode2 },
             outputFps: { type: 'integer', default: 30 },
+            blackboxSource: { type: 'string', default: BlackboxSources.BetaOrEmuFlight },
         },
     },
 };

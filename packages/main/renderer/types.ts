@@ -51,3 +51,10 @@ export enum AllowedLogExtensions {
     BBL = 'bbl',
     BFL = 'bfl',
 }
+
+// See: https://github.com/typescript-eslint/typescript-eslint/issues/325
+// eslint-disable-next-line no-shadow
+export enum BlackboxSources {
+  BetaOrEmuFlight = 'betaOrEmuflight',
+  Rotorflight = 'rotorflight',
+}
