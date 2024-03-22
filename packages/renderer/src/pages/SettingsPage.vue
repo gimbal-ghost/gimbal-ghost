@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import OutputFPSSelector from '../components/settings/OutputFPSSelector.vue';
+import BlackboxSourceSelector from '../components/settings/BlackboxSourceSelector.vue';
 import ModeSelector from '../components/settings/ModeSelector.vue';
+import OutputFPSSelector from '../components/settings/OutputFPSSelector.vue';
 import PlainButton from '../components/PlainButton.vue';
 import { useRootStore } from '../store';
 
@@ -23,6 +24,12 @@ const store = useRootStore();
             scrollbar-track-slate-700
             "
         >
+            <p>Blackbox Source</p>
+            <BlackboxSourceSelector
+                v-model="store.settings.gimbalRenderSettings.blackboxSource"
+                class="mb-3"
+                @update:model-value="store.updateSettingsInMainProcess"
+            />
             <p>Transmitter Mode</p>
             <ModeSelector
                 v-model="store.settings.gimbalRenderSettings.mode"

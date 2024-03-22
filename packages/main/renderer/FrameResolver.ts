@@ -1,11 +1,13 @@
 import path from 'path';
 import {
+    BlackboxSources,
     FramePaths, StickManifestInfo, StickPositions, TransmitterModes,
 } from './types';
 import { clamp, scale, nearest } from './utils';
 
 export interface FrameResolverOptions {
     stickManifestPath: string,
+    blackboxSource: BlackboxSources,
     transmitterMode?: TransmitterModes,
     fps?: number,
 }
@@ -17,6 +19,8 @@ export class FrameResolver {
 
     private stickFramesDirectory: string;
 
+    private blackboxSource: BlackboxSources;
+
     private transmitterMode: TransmitterModes;
 
     fps: number;
@@ -25,6 +29,7 @@ export class FrameResolver {
 
     constructor({
         stickManifestPath,
+        blackboxSource,
         transmitterMode = TransmitterModes.Mode2,
         fps = 30,
     } = {} as FrameResolverOptions) {
@@ -38,46 +43,69 @@ export class FrameResolver {
         this.stickInfo = require(stickManifestPath);
         this.stickFramesDirectory = path
             .resolve(this.stickManifestFile.dir, this.stickInfo.frames.location);
+        this.blackboxSource = blackboxSource;
         this.transmitterMode = transmitterMode;
         this.fps = fps;
         const secPerFrame = 1 / fps;
         this.microSecPerFrame = Math.floor(secPerFrame * 1000000);
     }
 
+    private getSourceInputRanges() {
+        if (this.blackboxSource === BlackboxSources.Rotorflight) {
+            return {
+                roll: { min: -500, max: 500 },
+                pitch: { min: -500, max: 500 },
+                yaw: { min: -500, max: 500 },
+                // Rotorflight rcCommand[3] blackbox output values are modified
+                throttle: { min: -500, max: 500 },
+            };
+        }
+
+        // Betaflight or EmuFlight
+        return {
+            roll: { min: -500, max: 500 },
+            pitch: { min: -500, max: 500 },
+            yaw: { min: -500, max: 500 },
+            throttle: { min: 1000, max: 2000 },
+        };
+    }
+
     generateFrameFileNames(stickPositions: StickPositions): FramePaths {
+        const inputRanges = this.getSourceInputRanges();
+
         const frameStickPositions = {
-            roll: FrameResolver.getFramePosition(
-                stickPositions.roll,
-                -500,
-                500,
-                this.stickInfo.frames.x.min,
-                this.stickInfo.frames.x.max,
-                this.stickInfo.frames.x.increment,
-            ),
-            pitch: FrameResolver.getFramePosition(
-                stickPositions.pitch,
-                -500,
-                500,
-                this.stickInfo.frames.y.min,
-                this.stickInfo.frames.y.max,
-                this.stickInfo.frames.y.increment,
-            ),
-            yaw: FrameResolver.getFramePosition(
-                stickPositions.yaw,
-                -500,
-                500,
-                this.stickInfo.frames.x.min,
-                this.stickInfo.frames.x.max,
-                this.stickInfo.frames.x.increment,
-            ),
-            throttle: FrameResolver.getFramePosition(
-                stickPositions.throttle,
-                1000,
-                2000,
-                this.stickInfo.frames.y.min,
-                this.stickInfo.frames.y.max,
-                this.stickInfo.frames.y.increment,
-            ),
+            roll: FrameResolver.getFramePosition({
+                inputValue: stickPositions.roll,
+                inputMin: inputRanges.roll.min,
+                inputMax: inputRanges.roll.max,
+                outputMin: this.stickInfo.frames.x.min,
+                outputMax: this.stickInfo.frames.x.max,
+                increment: this.stickInfo.frames.x.increment,
+            }),
+            pitch: FrameResolver.getFramePosition({
+                inputValue: stickPositions.pitch,
+                inputMin: inputRanges.pitch.min,
+                inputMax: inputRanges.pitch.max,
+                outputMin: this.stickInfo.frames.y.min,
+                outputMax: this.stickInfo.frames.y.max,
+                increment: this.stickInfo.frames.y.increment,
+            }),
+            yaw: FrameResolver.getFramePosition({
+                inputValue: stickPositions.yaw,
+                inputMin: inputRanges.yaw.min,
+                inputMax: inputRanges.yaw.max,
+                outputMin: this.stickInfo.frames.x.min,
+                outputMax: this.stickInfo.frames.x.max,
+                increment: this.stickInfo.frames.x.increment,
+            }),
+            throttle: FrameResolver.getFramePosition({
+                inputValue: stickPositions.throttle,
+                inputMin: inputRanges.throttle.min,
+                inputMax: inputRanges.throttle.max,
+                outputMin: this.stickInfo.frames.y.min,
+                outputMax: this.stickInfo.frames.y.max,
+                increment: this.stickInfo.frames.y.increment,
+            }),
         } as StickPositions;
 
         switch (this.transmitterMode) {
@@ -178,17 +206,19 @@ export class FrameResolver {
     }
 
     // Convert the log stick position to a frame position that is within the allowable frames
-    static getFramePosition(
-        value: number,
-        initialMin: number,
-        initialMax: number,
-        finalMin: number,
-        finalMax: number,
+    static getFramePosition({
+        inputValue, inputMin, inputMax, outputMin, outputMax, increment,
+    }: {
+        inputValue: number,
+        inputMin: number,
+        inputMax: number,
+        outputMin: number,
+        outputMax: number,
         increment: number,
-    ): number {
-        const clampedValue = clamp(value, initialMin, initialMax);
-        const scaledValue = scale(clampedValue, initialMin, initialMax, finalMin, finalMax);
-        const nearestFrameValue = nearest(scaledValue, finalMin, finalMax, increment);
+    }): number {
+        const clampedValue = clamp(inputValue, inputMin, inputMax);
+        const scaledValue = scale(clampedValue, inputMin, inputMax, outputMin, outputMax);
+        const nearestFrameValue = nearest(scaledValue, outputMin, outputMax, increment);
         return nearestFrameValue;
     }
 }

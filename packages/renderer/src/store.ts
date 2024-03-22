@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { BlackboxFlightEvent } from '../../main/renderer/BlackboxFlight';
-import { TransmitterModes } from '../../main/renderer/types';
+import { BlackboxSources, TransmitterModes } from '../../main/renderer/types';
 import { AppSettings } from '../../main/settings/schema';
 
 const params = new URLSearchParams(document.location.search);
@@ -38,6 +38,7 @@ export const useRootStore = defineStore('root', {
             gimbalRenderSettings: {
                 mode: TransmitterModes.Mode2,
                 outputFps: 30,
+                blackboxSource: BlackboxSources.BetaOrEmuFlight,
             },
         },
     }),
