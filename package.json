@@ -33,7 +33,7 @@
         "@types/node": "^17.0.25",
         "@typescript-eslint/eslint-plugin": "^5.20.0",
         "@typescript-eslint/parser": "^5.20.0",
-        "@vitejs/plugin-vue": "^2.3.1",
+        "@vitejs/plugin-vue": "^4.6.2",
         "autoprefixer": "^10.4.5",
         "csv-parse": "^5.0.4",
         "electron": "^18.0.4",
