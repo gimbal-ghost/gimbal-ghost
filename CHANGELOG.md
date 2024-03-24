@@ -1,3 +1,10 @@
+# 1.3.0
+Sunday, March 24, 2024, 7:09 PM UTC
+### Changes in this Release
+#### ADDED
+* Support for Rotorflight blackbox logs.
+
+
 # 1.3.0-rc.0
 Friday, March 22, 2024, 9:57 PM UTC
 ### Changes in this Release
