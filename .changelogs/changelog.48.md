@@ -1,3 +1,2 @@
 patch
-
-- [FIXED] Rotorflight yaw inverted.
+* [FIXED] Rotorflight yaw inverted.
