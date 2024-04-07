@@ -70,12 +70,26 @@ export class FrameResolver {
         };
     }
 
+    private getSourceInputValues(stickPositions: StickPositions) {
+        if (this.blackboxSource === BlackboxSources.Rotorflight) {
+            return stickPositions;
+        }
+
+        // Betaflight or EmuFlight
+        return {
+            ...stickPositions,
+            // Yaw must be inverted from the raw data
+            yaw: -stickPositions.yaw,
+        };
+    }
+
     generateFrameFileNames(stickPositions: StickPositions): FramePaths {
         const inputRanges = this.getSourceInputRanges();
+        const inputValues = this.getSourceInputValues(stickPositions);
 
         const frameStickPositions = {
             roll: FrameResolver.getFramePosition({
-                inputValue: stickPositions.roll,
+                inputValue: inputValues.roll,
                 inputMin: inputRanges.roll.min,
                 inputMax: inputRanges.roll.max,
                 outputMin: this.stickInfo.frames.x.min,
@@ -83,7 +97,7 @@ export class FrameResolver {
                 increment: this.stickInfo.frames.x.increment,
             }),
             pitch: FrameResolver.getFramePosition({
-                inputValue: stickPositions.pitch,
+                inputValue: inputValues.pitch,
                 inputMin: inputRanges.pitch.min,
                 inputMax: inputRanges.pitch.max,
                 outputMin: this.stickInfo.frames.y.min,
@@ -91,7 +105,7 @@ export class FrameResolver {
                 increment: this.stickInfo.frames.y.increment,
             }),
             yaw: FrameResolver.getFramePosition({
-                inputValue: stickPositions.yaw,
+                inputValue: inputValues.yaw,
                 inputMin: inputRanges.yaw.min,
                 inputMax: inputRanges.yaw.max,
                 outputMin: this.stickInfo.frames.x.min,
@@ -99,7 +113,7 @@ export class FrameResolver {
                 increment: this.stickInfo.frames.x.increment,
             }),
             throttle: FrameResolver.getFramePosition({
-                inputValue: stickPositions.throttle,
+                inputValue: inputValues.throttle,
                 inputMin: inputRanges.throttle.min,
                 inputMax: inputRanges.throttle.max,
                 outputMin: this.stickInfo.frames.y.min,
