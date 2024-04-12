@@ -1,3 +1,10 @@
+# 1.3.1
+Friday, April 12, 2024, 2:15 AM UTC
+### Changes in this Release
+#### FIXED
+* Rotorflight yaw inverted.
+
+
 # 1.3.1-rc.0
 Sunday, April 7, 2024, 2:57 AM UTC
 ### Changes in this Release
