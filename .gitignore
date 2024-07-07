@@ -4,3 +4,4 @@ releases
 test/*.mov
 RELEASE-NOTES.md
 .idea/**/*.*
+.DS_Store
