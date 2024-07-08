@@ -1,6 +1,9 @@
 ## Installation
 At this time, only Windows and Linux are supported.
 
+### MacOS
+Gimbal Ghost can be installed by downloading and running the `Gimbal Ghost.app` asset below. You can also copy `Gimbal Ghost.app` to the Application folder.
+
 ### Windows
 Gimbal Ghost can be installed by downloading and running the `GimbalGhost.exe` asset below.
 
