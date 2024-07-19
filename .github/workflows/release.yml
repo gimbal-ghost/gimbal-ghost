@@ -73,8 +73,8 @@ jobs:
           tag: ${{ steps.get-version.outputs.version }}
 
   lint-typecheck-build-and-publish:
+    needs: version-tag-create-release
     name: Lint, Typecheck, Build & Publish
-    depends-on: version-tag-create-release
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
