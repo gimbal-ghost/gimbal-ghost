@@ -117,6 +117,7 @@
             "category": "Video"
         },
         "mac": {
+            "identity": null,
             "target": [
                 {
                     "target": "mas"
