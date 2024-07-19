@@ -6,7 +6,7 @@ on:
 
 jobs:
   lint-typecheck-and-build:
-    depends-on: version-tag-create-release
+    name: Lint, Typecheck, & Build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -28,5 +28,5 @@ jobs:
           # lint, typecheck and build the app before running electron-builder
           build_script_name: prebuild
         env:
-          # https://www.electron.build/code-signing#how-to-disable-code-signing-during-the-build-process-on-macos
-          CSC_IDENTITY_AUTO_DISCOVERY: false
+          # MacOS needed for MacOS to build in PRs
+          CSC_FOR_PULL_REQUEST: true
