@@ -6,6 +6,7 @@ on:
 
 jobs:
   lint-typecheck-and-build:
+    name: Lint, Typecheck, & Build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -29,3 +30,5 @@ jobs:
         env:
           # https://www.electron.build/code-signing#how-to-disable-code-signing-during-the-build-process-on-macos
           CSC_IDENTITY_AUTO_DISCOVERY: false
+          # MacOS will not code sign during PRs
+          CSC_FOR_PULL_REQUEST: true
