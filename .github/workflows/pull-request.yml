@@ -6,7 +6,6 @@ on:
 
 jobs:
   lint-typecheck-and-build:
-    depends-on: version-tag-create-release
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
