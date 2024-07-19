@@ -33,5 +33,5 @@ jobs:
                 
       - name: Verify Release Artifacts
         run: |
-          echo "Release Dir Contents:"
+          echo "releases dir contents:"
           ls -l releases
