@@ -98,6 +98,5 @@ jobs:
           # Update the existing draft release created in the previous job
           args: --publish onTagOrDraft
         env:
-          # https://www.electron.build/code-signing#how-to-disable-code-signing-during-the-build-process-on-macos
-          CSC_IDENTITY_AUTO_DISCOVERY: false
+
         

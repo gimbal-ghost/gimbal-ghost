@@ -28,5 +28,10 @@ jobs:
           # lint, typecheck and build the app before running electron-builder
           build_script_name: prebuild
         env:
-          # MacOS needed for MacOS to build in PRs
+          # Needed for MacOS to build in PRs
           CSC_FOR_PULL_REQUEST: true
+                
+      - name: Verify Release Artifacts
+        run: |
+          echo "Release Dir Contents:"
+          ls -l release
