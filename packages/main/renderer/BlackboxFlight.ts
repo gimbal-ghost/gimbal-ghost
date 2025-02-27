@@ -201,6 +201,7 @@ export class BlackboxFlight {
         let logStartTime = 0;
         let previousLog: LogEntry | null = null;
         let frame = 0;
+        const frameDuration = 1 / this.frameResolver.fps;
 
         return transform((currentLogData, next) => {
             const currentLog = this.convertLogDataToLogEntry(currentLogData);
@@ -208,39 +209,39 @@ export class BlackboxFlight {
             // On the first pass, set log start time and ensure that we have a previous log
             if (!previousLog) {
                 logStartTime = currentLog.time;
-                const stickPositions = {
-                    roll: currentLog.roll,
-                    pitch: currentLog.pitch,
-                    yaw: currentLog.yaw,
-                    throttle: currentLog.throttle,
-                } as StickPositions;
-                const { leftFramePath, rightFramePath } = this.frameResolver
-                    .generateFrameFileNames(stickPositions);
-
-                let duration = 1 / this.frameResolver.fps;
-                if (this.frameResolver.blackboxSource === BlackboxSources.EdgeTX) {
-                    duration = 0.1; // todo: do this dynamically
-                }
-
-                leftDemuxFile.write(`file '${leftFramePath}'\nduration ${duration}\n`);
-                rightDemuxFile.write(`file '${rightFramePath}'\nduration ${duration}\n`);
-
-                frame += 1;
-                previousLog = currentLog;
             }
 
             // Create a frame when the log time is past the frame time
-            const currentFrameTime = logStartTime + (frame * this.frameResolver.microSecPerFrame);
+            let currentFrameTime = logStartTime + (frame * this.frameResolver.microSecPerFrame);
             const currentLogTime = currentLog.time;
-            // todo: do this dynamically
-            if (currentLogTime >= currentFrameTime || this.frameResolver.blackboxSource === BlackboxSources.EdgeTX) {
+            if (currentLogTime >= currentFrameTime) {
                 let stickPositions = {
                     roll: currentLog.roll,
                     pitch: currentLog.pitch,
                     yaw: currentLog.yaw,
                     throttle: currentLog.throttle,
                 } as StickPositions;
-                if (this.frameResolver.blackboxSource !== BlackboxSources.EdgeTX) {
+
+                if (previousLog) {
+                    // "catch up" in cases where framerate is greater than log rate
+                    while (currentFrameTime + frameDuration < currentLogTime) {
+                        stickPositions = BlackboxFlight.interpolateStickPositions(
+                            currentLog,
+                            previousLog,
+                            currentFrameTime,
+                        );
+
+                        const { leftFramePath, rightFramePath } = this.frameResolver
+                            .generateFrameFileNames(stickPositions);
+
+                        leftDemuxFile.write(`file '${leftFramePath}'\nduration ${frameDuration}\n`);
+                        rightDemuxFile.write(`file '${rightFramePath}'\nduration ${frameDuration}\n`);
+
+                        frame += 1;
+                        this.totalFrames += 1;
+                        currentFrameTime = logStartTime + (frame * this.frameResolver.microSecPerFrame);
+                    }
+
                     stickPositions = BlackboxFlight.interpolateStickPositions(
                         currentLog,
                         previousLog,
@@ -250,17 +251,13 @@ export class BlackboxFlight {
                 const { leftFramePath, rightFramePath } = this.frameResolver
                     .generateFrameFileNames(stickPositions);
 
-                let duration = 1 / this.frameResolver.fps;
-                if (this.frameResolver.blackboxSource === BlackboxSources.EdgeTX) {
-                    duration = 0.1; // todo: do this dynamically
-                }
-                leftDemuxFile.write(`file '${leftFramePath}'\nduration ${duration}\n`);
-                rightDemuxFile.write(`file '${rightFramePath}'\nduration ${duration}\n`);
+                leftDemuxFile.write(`file '${leftFramePath}'\nduration ${frameDuration}\n`);
+                rightDemuxFile.write(`file '${rightFramePath}'\nduration ${frameDuration}\n`);
 
                 // Advance variables for next iteration
+                previousLog = currentLog;
                 frame += 1;
                 this.totalFrames += 1;
-                previousLog = currentLog;
             }
             // Move on to the next log entry without piping data through
             return next();
