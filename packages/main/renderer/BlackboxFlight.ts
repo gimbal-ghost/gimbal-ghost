@@ -4,7 +4,12 @@ import { parse } from 'csv-parse';
 import { transform, Transformer } from 'stream-transform';
 import { spawn } from 'child_process';
 import { log } from '../logger';
-import { DemuxFilePair, LogEntry, StickPositions } from './types';
+import {
+    BlackboxSources,
+    DemuxFilePair,
+    LogEntry,
+    StickPositions,
+} from './types';
 import { FrameResolver } from './FrameResolver';
 import { getToolName } from '../utils';
 import { Event, EventNames } from '../event-bus/types';
@@ -93,7 +98,7 @@ export class BlackboxFlight {
     parse(): Promise<void> {
         this.emitStatusEvent(BlackboxFlightStatus.Parsing);
         return new Promise((resolve, reject) => {
-            // Confiugre output files
+            // Configure output files
             const leftDemuxFile = createWriteStream(this.demuxFilePair.leftDemuxFilePath);
             const rightDemuxFile = createWriteStream(this.demuxFilePair.rightDemuxFilePath);
 
@@ -198,7 +203,7 @@ export class BlackboxFlight {
         let frame = 0;
 
         return transform((currentLogData, next) => {
-            const currentLog = BlackboxFlight.convertLogDataToLogEntry(currentLogData);
+            const currentLog = this.convertLogDataToLogEntry(currentLogData);
 
             // On the first pass, set log start time and ensure that we have a previous log
             if (!previousLog) {
@@ -212,8 +217,13 @@ export class BlackboxFlight {
                 const { leftFramePath, rightFramePath } = this.frameResolver
                     .generateFrameFileNames(stickPositions);
 
-                leftDemuxFile.write(`file '${leftFramePath}'\nduration ${1 / this.frameResolver.fps}\n`);
-                rightDemuxFile.write(`file '${rightFramePath}'\nduration ${1 / this.frameResolver.fps}\n`);
+                let duration = 1 / this.frameResolver.fps;
+                if (this.frameResolver.blackboxSource === BlackboxSources.EdgeTX) {
+                    duration = 0.1; // todo: do this dynamically
+                }
+
+                leftDemuxFile.write(`file '${leftFramePath}'\nduration ${duration}\n`);
+                rightDemuxFile.write(`file '${rightFramePath}'\nduration ${duration}\n`);
 
                 frame += 1;
                 previousLog = currentLog;
@@ -222,17 +232,30 @@ export class BlackboxFlight {
             // Create a frame when the log time is past the frame time
             const currentFrameTime = logStartTime + (frame * this.frameResolver.microSecPerFrame);
             const currentLogTime = currentLog.time;
-            if (currentLogTime >= currentFrameTime) {
-                const stickPositions = BlackboxFlight.interpolateStickPositions(
-                    currentLog,
-                    previousLog,
-                    currentFrameTime,
-                );
+            // todo: do this dynamically
+            if (currentLogTime >= currentFrameTime || this.frameResolver.blackboxSource === BlackboxSources.EdgeTX) {
+                let stickPositions = {
+                    roll: currentLog.roll,
+                    pitch: currentLog.pitch,
+                    yaw: currentLog.yaw,
+                    throttle: currentLog.throttle,
+                } as StickPositions;
+                if (this.frameResolver.blackboxSource !== BlackboxSources.EdgeTX) {
+                    stickPositions = BlackboxFlight.interpolateStickPositions(
+                        currentLog,
+                        previousLog,
+                        currentFrameTime,
+                    );
+                }
                 const { leftFramePath, rightFramePath } = this.frameResolver
                     .generateFrameFileNames(stickPositions);
 
-                leftDemuxFile.write(`file '${leftFramePath}'\nduration ${1 / this.frameResolver.fps}\n`);
-                rightDemuxFile.write(`file '${rightFramePath}'\nduration ${1 / this.frameResolver.fps}\n`);
+                let duration = 1 / this.frameResolver.fps;
+                if (this.frameResolver.blackboxSource === BlackboxSources.EdgeTX) {
+                    duration = 0.1; // todo: do this dynamically
+                }
+                leftDemuxFile.write(`file '${leftFramePath}'\nduration ${duration}\n`);
+                rightDemuxFile.write(`file '${rightFramePath}'\nduration ${duration}\n`);
 
                 // Advance variables for next iteration
                 frame += 1;
@@ -275,7 +298,17 @@ export class BlackboxFlight {
         }
     }
 
-    static convertLogDataToLogEntry(logData: any): LogEntry {
+    private convertLogDataToLogEntry(logData: any): LogEntry {
+        if (this.frameResolver.blackboxSource === BlackboxSources.EdgeTX) {
+            return {
+                time: Date.parse(`${logData.Date} ${logData.Time}`) * 1000, // microseconds
+                roll: Number(logData.Ail),
+                pitch: Number(logData.Thr),
+                yaw: Number(logData.Rud),
+                throttle: Number(logData.Ele),
+            };
+        }
+
         return {
             time: Number(logData['time (us)']),
             roll: Number(logData['rcCommand[0]']),

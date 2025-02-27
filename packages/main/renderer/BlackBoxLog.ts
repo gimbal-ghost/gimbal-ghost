@@ -45,8 +45,9 @@ export class BlackboxLog {
         this.initialLogFile = path.parse(this.initialLogPath);
         this.outputDirectoryPath = outputDirectoryPath;
 
-        if (![AllowedLogExtensions.BBL, AllowedLogExtensions.BFL].includes(this.initialLogFile.ext.toLowerCase().replace('.', '') as AllowedLogExtensions)) {
-            throw Error(`Blackbox log files must end in .bbl or .bfl. Filename passed: ${this.initialLogFile.base}`);
+        if (![AllowedLogExtensions.BBL, AllowedLogExtensions.BFL, AllowedLogExtensions.CSV]
+            .includes(this.initialLogFile.ext.toLowerCase().replace('.', '') as AllowedLogExtensions)) {
+            throw Error(`Blackbox log files must end in .bbl, .bfl, or .csv. Filename passed: ${this.initialLogFile.base}`);
         }
 
         // Copy log file to a temp directory before performing all operations
@@ -57,6 +58,18 @@ export class BlackboxLog {
     // Decode the blackbox file into csv files in the temp directory
     decode(): Promise<void> {
         log.info(`[${this.tempLogFile.base}] Decoding`);
+
+        if (this.initialLogFile.ext.toLowerCase() === AllowedLogExtensions.CSV) {
+            return new Promise(resolve => {
+                this.blackboxFlights = [new BlackboxFlight({
+                    csvPath: this.tempLogPath,
+                    blackboxLogPath: this.initialLogPath,
+                    frameResolver: this.frameResolver,
+                    outputDirectoryPath: this.outputDirectoryPath,
+                })];
+                resolve();
+            });
+        }
 
         return new Promise((resolve, reject) => {
             const decodeProcess = spawn(this.blackboxDecodePath, [this.tempLogPath]);
