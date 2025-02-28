@@ -49,7 +49,7 @@ export class BlackboxFlight {
 
     private blackboxLogPath: string;
 
-    private flightNumber: number;
+    private flightNumber: number = 0;
 
     private totalFrames: number = 0;
 
@@ -71,15 +71,21 @@ export class BlackboxFlight {
         this.csvPath = csvPath;
         this.blackboxLogPath = blackboxLogPath;
         this.csvPathInfo = path.parse(this.csvPath);
-
-        const csvPathRegEx = /^(?<blackboxLogName>.+(?=\.\d{2}))\.(?<flightNumber>\d{2})/g;
-        const matches = [...this.csvPathInfo.name.matchAll(csvPathRegEx)];
-        const matchGroups = matches[0]?.groups;
-        this.blackboxLogName = matchGroups?.blackboxLogName || 'log name unknown';
-        this.flightNumber = parseInt(matchGroups?.flightNumber || '00', 10);
-
         this.frameResolver = frameResolver;
-        this.outputFileName = `${this.blackboxLogName} flight ${this.flightNumber}.mov`;
+
+        if (this.frameResolver.blackboxSource === BlackboxSources.EdgeTX) {
+            this.outputFileName = `${this.csvPathInfo.name}.mov`;
+        }
+        else {
+            const csvPathRegEx = /^(?<blackboxLogName>.+(?=\.\d{2}))\.(?<flightNumber>\d{2})/g;
+            const matches = [...this.csvPathInfo.name.matchAll(csvPathRegEx)];
+            const matchGroups = matches[0]?.groups;
+            this.blackboxLogName = matchGroups?.blackboxLogName || 'log name unknown';
+            this.flightNumber = parseInt(matchGroups?.flightNumber || '00', 10);
+
+            this.outputFileName = `${this.blackboxLogName} flight ${this.flightNumber}.mov`;
+        }
+
         this.outputFilePath = path.resolve(outputDirectoryPath, this.outputFileName);
 
         const leftDemuxOutputFilename = `${this.csvPathInfo.name}.left.demux.txt`;
