@@ -261,9 +261,9 @@ export class BlackboxFlight {
                 rightDemuxFile.write(`file '${rightFramePath}'\nduration ${frameDuration}\n`);
 
                 // Advance variables for next iteration
-                previousLog = currentLog;
                 frame += 1;
                 this.totalFrames += 1;
+                previousLog = currentLog;
             }
             // Move on to the next log entry without piping data through
             return next();

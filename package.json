@@ -8,7 +8,7 @@
     "main": "dist/main/main.cjs",
     "scripts": {
         "prebuild": "npm run lint && npm run typecheck && node scripts/build.mjs",
-        "build": "electron-builder --windows",
+        "build": "electron-builder --windows --linux",
         "postbuild": "rm -f yarn.lock",
         "version": "node scripts/compile-changelog.mjs",
         "lint": "eslint --max-warnings 0",
