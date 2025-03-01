@@ -1,3 +1,12 @@
+# 1.4.0
+Saturday, March 1, 2025, 5:49 PM UTC
+### Changes in this Release
+#### ADDED
+* Support for EdgeTX logs.
+#### FIXED
+* Drag and drop for EdgeTX .csv files.
+
+
 # 1.4.0-rc.1
 Saturday, March 1, 2025, 3:53 PM UTC
 ### Changes in this Release
