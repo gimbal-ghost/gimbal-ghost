@@ -1,6 +1,6 @@
 ![Gimbal Ghost](/banner.png)
 
-### **Gimbal Ghost is a desktop app allowing you to quickly create high quality 3D video of your gimbal sticks from your Betaflight, EmuFlight, and Rotorflight blackbox logs.**
+### **Gimbal Ghost is a desktop app allowing you to quickly create high quality 3D video of your gimbal sticks from your Betaflight, EmuFlight, Rotorflight, and EdgeTX logs.**
 
 Think stick cam, but with a ghost moving the gimbals. 😜
 
