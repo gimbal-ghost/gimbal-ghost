@@ -42,7 +42,6 @@ const emit = defineEmits<Emits>();
             <button
                 type="button"
                 class="
-                    rounded-r-full
                     inline-block px-3
                     hover:brightness-75
                     font-medium
@@ -56,6 +55,25 @@ const emit = defineEmits<Emits>();
                 @click="emit('update:modelValue', BlackboxSources.Rotorflight)"
             >
                 Rotorflight
+            </button>
+
+            <button
+                type="button"
+                class="
+                    rounded-r-full
+                    inline-block px-3
+                    hover:brightness-75
+                    font-medium
+                "
+                :class="{
+                    'bg-blue-600': props.modelValue === BlackboxSources.EdgeTX,
+                    'bg-slate-100': props.modelValue !== BlackboxSources.EdgeTX,
+                    'text-slate-300': props.modelValue === BlackboxSources.EdgeTX,
+                    'text-slate-800': props.modelValue !== BlackboxSources.EdgeTX,
+                }"
+                @click="emit('update:modelValue', BlackboxSources.EdgeTX)"
+            >
+                EdgeTX
             </button>
         </div>
     </div>

@@ -12,7 +12,7 @@ async function getBlackboxFilePaths(): Promise<string[] | null> {
         title: 'Blackbox Files',
         buttonLabel: 'Select',
         filters: [
-            { name: 'Blackbox Files', extensions: [AllowedLogExtensions.BBL, AllowedLogExtensions.BFL] },
+            { name: 'Blackbox Files', extensions: [AllowedLogExtensions.BBL, AllowedLogExtensions.BFL, AllowedLogExtensions.CSV] },
         ],
         properties: ['openFile', 'multiSelections', 'dontAddToRecent'],
     });

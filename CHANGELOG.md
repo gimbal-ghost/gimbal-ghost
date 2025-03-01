@@ -1,3 +1,10 @@
+# 1.4.0-rc.0
+Saturday, March 1, 2025, 3:57 AM UTC
+### Changes in this Release
+#### ADDED
+* Support for EdgeTX logs.
+
+
 # 1.3.1
 Friday, April 12, 2024, 2:15 AM UTC
 ### Changes in this Release
