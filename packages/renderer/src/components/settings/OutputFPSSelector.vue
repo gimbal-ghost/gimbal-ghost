@@ -1,11 +1,11 @@
 <script setup lang="ts">
 
 interface Props {
-    modelValue: Number
+    modelValue: number
 }
 
 interface Emits {
-    (e: 'update:modelValue', value: Number): void
+    (e: 'update:modelValue', value: number): void
 }
 
 const props = defineProps<Props>();

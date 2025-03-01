@@ -19,7 +19,7 @@ export function getWindow(): BrowserWindow | null {
     return null;
 }
 
-function windowIsOnScreen(windowX: Number, windowY: Number): Boolean {
+function windowIsOnScreen(windowX: number, windowY: number): Boolean {
     let isOnScreen = false;
     screen.getAllDisplays().forEach(display => {
         // Determine if display is rotated 90 degrees such that width/height are swapped
