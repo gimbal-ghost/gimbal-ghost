@@ -119,7 +119,7 @@ const props = defineProps<Props>();
             </h1>
 
             <div class="font-normal">
-                Drag or select blackbox files (.bbl/.bfl) to get started
+                Drag or select blackbox files (.bbl/.bfl/.csv) to get started
             </div>
         </div>
     </div>

@@ -50,6 +50,7 @@ export enum TransmitterModes {
 export enum AllowedLogExtensions {
     BBL = 'bbl',
     BFL = 'bfl',
+    CSV = 'csv',
 }
 
 // See: https://github.com/typescript-eslint/typescript-eslint/issues/325
@@ -57,4 +58,5 @@ export enum AllowedLogExtensions {
 export enum BlackboxSources {
   BetaOrEmuFlight = 'betaOrEmuflight',
   Rotorflight = 'rotorflight',
+  EdgeTX = 'edgeTX'
 }

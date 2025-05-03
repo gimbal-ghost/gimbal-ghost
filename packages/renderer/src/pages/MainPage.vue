@@ -24,8 +24,9 @@ function drop(event: DragEvent) {
     if (files) {
         for (let index = 0; index < files.length; index += 1) {
             const file = files?.item(index);
-            // Ensure that only bbl/bfl files are allowed
-            if (file && file.path && (file.path.toLowerCase().endsWith(AllowedLogExtensions.BBL) || file.path.toLowerCase().endsWith(AllowedLogExtensions.BFL))) {
+            // Ensure that only bbl/bfl/csv files are allowed
+            const fileExt = file?.path.toLowerCase();
+            if (file && file.path && (fileExt?.endsWith(AllowedLogExtensions.BBL) || fileExt?.endsWith(AllowedLogExtensions.BFL) || fileExt?.endsWith(AllowedLogExtensions.CSV))) {
                 store.addBlackboxFile(file.path);
             }
         }

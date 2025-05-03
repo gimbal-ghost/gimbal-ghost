@@ -19,9 +19,9 @@ export class FrameResolver {
 
     private stickFramesDirectory: string;
 
-    private blackboxSource: BlackboxSources;
-
     private transmitterMode: TransmitterModes;
+
+    blackboxSource: BlackboxSources;
 
     fps: number;
 
@@ -61,6 +61,15 @@ export class FrameResolver {
             };
         }
 
+        if (this.blackboxSource === BlackboxSources.EdgeTX) {
+            return {
+                roll: { min: -1024, max: 1024 },
+                pitch: { min: -1024, max: 1024 },
+                yaw: { min: -1024, max: 1024 },
+                throttle: { min: -1024, max: 1024 },
+            };
+        }
+
         // Betaflight or EmuFlight
         return {
             roll: { min: -500, max: 500 },
@@ -71,16 +80,15 @@ export class FrameResolver {
     }
 
     private getSourceInputValues(stickPositions: StickPositions) {
-        if (this.blackboxSource === BlackboxSources.Rotorflight) {
-            return stickPositions;
+        if (this.blackboxSource === BlackboxSources.BetaOrEmuFlight) {
+            return {
+                ...stickPositions,
+                // Yaw must be inverted from the raw data
+                yaw: -stickPositions.yaw,
+            };
         }
 
-        // Betaflight or EmuFlight
-        return {
-            ...stickPositions,
-            // Yaw must be inverted from the raw data
-            yaw: -stickPositions.yaw,
-        };
+        return stickPositions;
     }
 
     generateFrameFileNames(stickPositions: StickPositions): FramePaths {

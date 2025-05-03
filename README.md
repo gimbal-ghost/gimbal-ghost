@@ -1,6 +1,6 @@
 ![Gimbal Ghost](/banner.png)
 
-### **Gimbal Ghost is a desktop app allowing you to quickly create high quality 3D video of your gimbal sticks from your Betaflight, EmuFlight, and Rotorflight blackbox logs.**
+### **Gimbal Ghost is a desktop app allowing you to quickly create high quality 3D video of your gimbal sticks from your Betaflight, EmuFlight, Rotorflight, and EdgeTX logs.**
 
 Think stick cam, but with a ghost moving the gimbals. 😜
 
@@ -45,7 +45,7 @@ For those interested, the Gimbal Ghost's process of creating a 3D video of trans
    - The resolved frame paths are compiled into a left and right demux `.txt` file for use by FFmpeg in rendering.
 
 1. Render:
-   - The two demux `.txt` files are fed to FFmpeg as separte input streams using two concat demuxers.
+   - The two demux `.txt` files are fed to FFmpeg as separate input streams using two concat demuxers.
    - The left gimbal input stream is padded with transparent pixels to provide spacing from the right gimbal in the final video.
    - The padded left gimbal stream is then horizontally stacked with the right gimbal input stream giving a top down view of the tranmitter with left and right gimbals.
    - The resulting output stream is encoded in a format with transparency (Apple Pro res 4444) to arrive at a final video that can be overlayed on flight footage.
