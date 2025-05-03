@@ -30,8 +30,10 @@ jobs:
         env:
           # Needed for MacOS to build in PRs
           CSC_FOR_PULL_REQUEST: true
-                
-      - name: Verify Release Artifacts
-        run: |
-          echo "releases dir contents:"
-          ls -l releases
+
+      - name: Upload Release Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-directory-${{ matrix.os }}
+          path: releases/
+          if-no-files-found: error
