@@ -7,7 +7,7 @@ import { tmpdir } from 'os';
 import path from 'path';
 import { FrameResolver } from './FrameResolver';
 import { log } from '../logger';
-import { getVendorToolPath } from '../utils';
+import { getToolName } from '../utils';
 import { BlackboxFlight } from './BlackboxFlight';
 import { AllowedLogExtensions } from './types';
 
@@ -39,7 +39,7 @@ export class BlackboxLog {
     constructor({ logPath, frameResolver, outputDirectoryPath } = {} as BlackboxLogOptions) {
         this.frameResolver = frameResolver;
         this.tempDirectory = mkdtempSync(path.join(tmpdir(), 'gimbal-ghost-'));
-        this.blackboxDecodePath = getVendorToolPath('blackbox_decode');
+        this.blackboxDecodePath = getToolName('blackbox_decode');
         log.debug('this.blackboxDecodePath:', this.blackboxDecodePath);
         this.initialLogPath = logPath;
         this.initialLogFile = path.parse(this.initialLogPath);

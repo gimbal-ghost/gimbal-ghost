@@ -11,7 +11,7 @@ import {
     StickPositions,
 } from './types';
 import { FrameResolver } from './FrameResolver';
-import { getVendorToolPath } from '../utils';
+import { getToolName } from '../utils';
 import { Event, EventNames } from '../event-bus/types';
 import { EventBus } from '../event-bus/EventBus';
 
@@ -95,7 +95,8 @@ export class BlackboxFlight {
             rightDemuxFilePath: path.resolve(this.csvPathInfo.dir, rightDemuxOutputFilename),
         };
 
-        this.ffmpegPath = getVendorToolPath('ffmpeg');
+        this.ffmpegPath = getToolName('ffmpeg');
+        log.debug('this.ffmpegPath:', this.ffmpegPath);
 
         this.emitStatusEvent(BlackboxFlightStatus.Decoded);
     }
