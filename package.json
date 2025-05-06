@@ -123,6 +123,7 @@
                     "target": "mas"
                 }
             ],
+            "artifactName": "GimbalGhost.${ext}",
             "icon": "dist/main/icon-512x512.png"
         },
         "dmg": {
