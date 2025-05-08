@@ -113,7 +113,7 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' }}
         uses: softprops/action-gh-release@v2
         with:
-          files: releases/mas-arm64/Gimbal Ghost.app.zip
+          files: releases/mas-arm64/GimbalGhost.app.zip
           tag_name: v2.0.0-rc.0
 
       - name: Upload Release Artifacts
