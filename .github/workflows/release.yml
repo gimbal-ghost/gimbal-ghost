@@ -106,8 +106,8 @@ jobs:
       - name: Zip the MacOS App
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          cd releases/mas-arm64
-          zip -r "Gimbal Ghost.app.zip" "Gimbal Ghost.app"
+          cd "releases/mas-arm64/Gimbal Ghost.app"
+          zip -r "../GimbalGhost.app.zip" .
 
       - name: Publish MacOS Artifacts to Release
         if: ${{ matrix.os == 'macos-latest' }}
