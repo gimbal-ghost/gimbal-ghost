@@ -10,7 +10,7 @@ function getExecutableName(executable: string): string {
 }
 
 // Get the absolute path to a vendored tool
-export function getToolName(tool: 'blackbox_decode' | 'ffmpeg'): string {
+export function getVendorToolPath(tool: 'blackbox_decode' | 'ffmpeg'): string {
     return path.resolve(
         RESOURCE_PATH,
         'vendor',

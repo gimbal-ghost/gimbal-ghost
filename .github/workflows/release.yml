@@ -13,15 +13,10 @@ on:
           - alpha
           - beta
           - rc
-      draft:
-        description: Draft
-        type: boolean
-        required: true
-        default: true
 
 jobs:
-  release:
-    name: Release
+  version-tag-create-release:
+    name: Version, Tag, and Create Release
     runs-on: ubuntu-latest
     # Ensure release is only run on main
     if: ${{ github.ref == 'refs/heads/main' }}
@@ -35,7 +30,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v3.1.1
         with:
-          node-version: 16.14.x
+          node-version: 18.18.x
           cache: npm
 
       - name: NPM Install
@@ -68,18 +63,40 @@ jobs:
           script: |
               core.setFailed('Commit failed')
 
-      # See https://www.electron.build/multi-platform-build#docker
-      - name: Lint, Typecheck, and Build in Electron Builder Container
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: 'docker run --rm --env-file <(env | grep -iE "DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS_TAG|TRAVIS|TRAVIS_REPO_|TRAVIS_BUILD_|TRAVIS_BRANCH|TRAVIS_PULL_REQUEST_|APPVEYOR_|CSC_|GH_|GITHUB_|BT_|AWS_|STRIP|BUILD_") --env ELECTRON_CACHE="/root/.cache/electron" --env ELECTRON_BUILDER_CACHE="/root/.cache/electron-builder" -v ${PWD}:/project -v ${PWD##*/}-node-modules:/project/node_modules -v ~/.cache/electron:/root/.cache/electron -v ~/.cache/electron-builder:/root/.cache/electron-builder electronuserland/builder:16-wine /bin/bash -c "yarn install && yarn run build"'
-
       - name: Create Release
         uses: ncipollo/release-action@v1.10.0
         with:
-          artifacts: "releases/*.exe, releases/*.exe.blockmap, releases/latest.yml, releases/*.AppImage, releases/latest-linux.yml"
           bodyFile: "RELEASE-NOTES.md"
-          draft: ${{ inputs.draft }}
+          draft: true
           name: ${{ steps.get-version.outputs.version }}
           prerelease: ${{ inputs.releaseType != 'official' }}
           tag: ${{ steps.get-version.outputs.version }}
+
+  lint-typecheck-build-and-publish:
+    needs: version-tag-create-release
+    name: Lint, Typecheck, Build & Publish
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.1.1
+        with:
+          node-version: 18.18.x
+          cache: npm
+
+      - name: Lint, Typecheck, Build & Publish Electron App
+        uses: samuelmeuli/action-electron-builder@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # lint, typecheck and build the app before running electron-builder
+          build_script_name: prebuild
+          # Update the existing draft release created in the previous job
+          args: --publish onTagOrDraft
+        env:
+
+        
