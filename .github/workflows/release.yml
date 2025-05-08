@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       releaseType:
-        description: Release Type
+        description: Release Type, choose skip to just build and publish without a version bump
         type: choice
         required: true
         default: official
@@ -13,13 +13,14 @@ on:
           - alpha
           - beta
           - rc
+          - skip
 
 jobs:
   version-tag-create-release:
     name: Version, Tag, and Create Release
     runs-on: ubuntu-latest
     # Ensure release is only run on main
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/main' && inputs.releaseType != 'skip' }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -82,6 +83,10 @@ jobs:
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v2
+        with:
+          # Grab the latest commit from the main branch
+          # This is needed to ensure the release is built from the latest commit from above
+          ref: main
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
@@ -95,7 +100,14 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           # lint, typecheck and build the app before running electron-builder
           build_script_name: prebuild
-          # Update the existing draft release created in the previous job
           args: --publish onTagOrDraft
+
+      - name: Upload Release Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-releases-directory
+          path: releases/
+          if-no-files-found: error
+          
 
         

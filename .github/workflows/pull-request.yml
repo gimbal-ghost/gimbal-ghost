@@ -34,6 +34,6 @@ jobs:
       - name: Upload Release Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: release-directory-${{ matrix.os }}
+          name: ${{ matrix.os }}-releases-directory
           path: releases/
           if-no-files-found: error
