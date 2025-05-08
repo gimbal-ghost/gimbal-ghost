@@ -1,3 +1,10 @@
+# 2.0.0-rc.0
+Thursday, May 8, 2025 at 1:46 AM UTC
+### Changes in this Release
+#### ADDED
+* Added suport for MacOS. Thanks to @cedricwalter for making this possible!
+
+
 # 1.4.0
 Saturday, March 1, 2025, 5:49 PM UTC
 ### Changes in this Release
