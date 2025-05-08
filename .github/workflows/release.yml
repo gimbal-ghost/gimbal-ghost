@@ -97,6 +97,5 @@ jobs:
           build_script_name: prebuild
           # Update the existing draft release created in the previous job
           args: --publish onTagOrDraft
-        env:
 
         
