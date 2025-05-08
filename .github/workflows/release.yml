@@ -106,13 +106,14 @@ jobs:
       - name: Zip the MacOS App
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          zip -r releases/mas-arm64/GimbalGhost.zip releases/mas-arm64/Gimbal\ Ghost.app
+          cd releases/mas-arm64
+          zip -r "Gimbal Ghost.app.zip" "Gimbal Ghost.app"
 
       - name: Publish MacOS Artifacts to Release
         if: ${{ matrix.os == 'macos-latest' }}
         uses: softprops/action-gh-release@v2
         with:
-          files: releases/mas-arm64/GimbalGhost.zip
+          files: releases/mas-arm64/Gimbal Ghost.app.zip
           tag_name: v2.0.0-rc.0
 
       - name: Upload Release Artifacts
