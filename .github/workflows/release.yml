@@ -75,6 +75,7 @@ jobs:
 
   lint-typecheck-build-and-publish:
     needs: version-tag-create-release
+    if: always() && (needs.version-tag-create-release.result == 'success' || needs.version-tag-create-release.result == 'skipped')
     name: Lint, Typecheck, Build & Publish
     runs-on: ${{ matrix.os }}
     strategy:
