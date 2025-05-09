@@ -13,14 +13,14 @@ on:
           - alpha
           - beta
           - rc
-          - skip
+          - skip-version-bump
 
 jobs:
   version-tag-create-release:
     name: Version, Tag, and Create Release
     runs-on: ubuntu-latest
     # Ensure release is only run on main
-    if: ${{ github.ref == 'refs/heads/main' && inputs.releaseType != 'skip' }}
+    if: ${{ github.ref == 'refs/heads/main' && inputs.releaseType != 'skip-version-bump' }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -103,6 +103,10 @@ jobs:
           build_script_name: prebuild
           args: --publish onTagOrDraft
 
+      - name: Get Version
+        id: get-version
+        run: echo "::set-output name=tag_version::$(node --print "'v'.concat(require('./package.json').version)")"
+
       - name: Zip the MacOS App
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
@@ -114,7 +118,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: releases/mas-arm64/GimbalGhost.app.zip
-          tag_name: v2.0.0-rc.0
+          tag_name: ${{ steps.get-version.outputs.version }}
 
       - name: Upload Release Artifacts
         uses: actions/upload-artifact@v4
