@@ -47,7 +47,7 @@ jobs:
 
       - name: Get Version
         id: get-version
-        run: echo "::set-output name=version::$(node --print "'v'.concat(require('./package.json').version)")"
+        run: echo "version=$(node --print "'v'.concat(require('./package.json').version)")" >> $GITHUB_OUTPUT
 
       - name: Commit Version
         id: commit-version
@@ -103,9 +103,12 @@ jobs:
           build_script_name: prebuild
           args: --publish onTagOrDraft
 
+      # MacOS electron-build step does not publish the app to the release
+      # so we need to publish it manually
       - name: Get Version
+        if: ${{ matrix.os == 'macos-latest' }}
         id: get-version
-        run: echo "::set-output name=tag_version::$(node --print "'v'.concat(require('./package.json').version)")"
+        run: echo "version=$(node --print "'v'.concat(require('./package.json').version)")" >> $GITHUB_OUTPUT
 
       - name: Zip the MacOS App
         if: ${{ matrix.os == 'macos-latest' }}
@@ -120,6 +123,7 @@ jobs:
           files: releases/mas-arm64/GimbalGhost.app.zip
           tag_name: ${{ steps.get-version.outputs.version }}
 
+      # Save the artifacts for debugging if needed
       - name: Upload Release Artifacts
         uses: actions/upload-artifact@v4
         with:
