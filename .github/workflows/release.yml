@@ -120,7 +120,7 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' }}
         uses: softprops/action-gh-release@v2
         with:
-          files: releases/GimbalGhost.app.zip
+          files: releases/GimbalGhost.zip
           tag_name: ${{ steps.get-version.outputs.version }}
 
       # Save the artifacts for debugging if needed
