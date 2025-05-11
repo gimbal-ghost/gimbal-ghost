@@ -38,7 +38,15 @@ app.whenReady().then(async () => {
         .then(name => console.log(`Added Extension:  ${name}`))
         .catch(err => console.log('An error occurred when adding chrome extension: ', err));
     }
-    autoUpdater.checkForUpdatesAndNotify();
+
+    if (process.platform !== 'darwin') {
+      autoUpdater.checkForUpdatesAndNotify();
+    }
+    // Unsigned MacOS app will not be able to use the auto updater
+    else {
+      log.warn('Auto updater is disabled for unsigned MacOS app');
+    }
+    
     registerMainIPCHandlers();
     await createWindow();
 });
